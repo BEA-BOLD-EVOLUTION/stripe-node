@@ -4,7 +4,7 @@ declare module 'stripe' {
   namespace Stripe {
     interface PaymentIntentCreateParams {
       /**
-       * Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99).
+       * Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://docs.stripe.com/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99).
        */
       amount: number;
 
@@ -14,7 +14,12 @@ declare module 'stripe' {
       currency: string;
 
       /**
-       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * Provides industry-specific information about the amount.
+       */
+      amount_details?: PaymentIntentCreateParams.AmountDetails;
+
+      /**
+       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       application_fee_amount?: number;
 
@@ -29,7 +34,7 @@ declare module 'stripe' {
       capture_method?: PaymentIntentCreateParams.CaptureMethod;
 
       /**
-       * Set to `true` to attempt to [confirm this PaymentIntent](https://stripe.com/docs/api/payment_intents/confirm) immediately. This parameter defaults to `false`. When creating and confirming a PaymentIntent at the same time, you can also provide the parameters available in the [Confirm API](https://stripe.com/docs/api/payment_intents/confirm).
+       * Set to `true` to attempt to [confirm this PaymentIntent](https://docs.stripe.com/api/payment_intents/confirm) immediately. This parameter defaults to `false`. When creating and confirming a PaymentIntent at the same time, you can also provide the parameters available in the [Confirm API](https://docs.stripe.com/api/payment_intents/confirm).
        */
       confirm?: boolean;
 
@@ -50,9 +55,18 @@ declare module 'stripe' {
        *
        * Payment methods attached to other Customers cannot be used with this PaymentIntent.
        *
-       * If [setup_future_usage](https://stripe.com/docs/api#payment_intent_object-setup_future_usage) is set and this PaymentIntent's payment method is not `card_present`, then the payment method attaches to the Customer after the PaymentIntent has been confirmed and any required actions from the user are complete. If the payment method is `card_present` and isn't a digital wallet, then a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card is created and attached to the Customer instead.
+       * If [setup_future_usage](https://api.stripe.com#payment_intent_object-setup_future_usage) is set and this PaymentIntent's payment method is not `card_present`, then the payment method attaches to the Customer after the PaymentIntent has been confirmed and any required actions from the user are complete. If the payment method is `card_present` and isn't a digital wallet, then a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card is created and attached to the Customer instead.
        */
       customer?: string;
+
+      /**
+       * ID of the Account representing the customer that this PaymentIntent belongs to, if one exists.
+       *
+       * Payment methods attached to other Accounts cannot be used with this PaymentIntent.
+       *
+       * If [setup_future_usage](https://api.stripe.com#payment_intent_object-setup_future_usage) is set and this PaymentIntent's payment method is not `card_present`, then the payment method attaches to the Account after the PaymentIntent has been confirmed and any required actions from the user are complete. If the payment method is `card_present` and isn't a digital wallet, then a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card is created and attached to the Account instead.
+       */
+      customer_account?: string;
 
       /**
        * An arbitrary string attached to the object. Often useful for displaying to users.
@@ -60,7 +74,7 @@ declare module 'stripe' {
       description?: string;
 
       /**
-       * Set to `true` to fail the payment attempt if the PaymentIntent transitions into `requires_action`. Use this parameter for simpler integrations that don't handle customer actions, such as [saving cards without authentication](https://stripe.com/docs/payments/save-card-without-authentication). This parameter can only be used with [`confirm=true`](https://stripe.com/docs/api/payment_intents/create#create_payment_intent-confirm).
+       * Set to `true` to fail the payment attempt if the PaymentIntent transitions into `requires_action`. Use this parameter for simpler integrations that don't handle customer actions, such as [saving cards without authentication](https://docs.stripe.com/payments/save-card-without-authentication). This parameter can only be used with [`confirm=true`](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-confirm).
        */
       error_on_requires_action?: boolean;
 
@@ -77,47 +91,57 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * ID of the mandate that's used for this payment. This parameter can only be used with [`confirm=true`](https://stripe.com/docs/api/payment_intents/create#create_payment_intent-confirm).
+       * Automations to be run during the PaymentIntent lifecycle
+       */
+      hooks?: PaymentIntentCreateParams.Hooks;
+
+      /**
+       * ID of the mandate that's used for this payment. This parameter can only be used with [`confirm=true`](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-confirm).
        */
       mandate?: string;
 
       /**
-       * This hash contains details about the Mandate to create. This parameter can only be used with [`confirm=true`](https://stripe.com/docs/api/payment_intents/create#create_payment_intent-confirm).
+       * This hash contains details about the Mandate to create. This parameter can only be used with [`confirm=true`](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-confirm).
        */
       mandate_data?: Stripe.Emptyable<PaymentIntentCreateParams.MandateData>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.MetadataParam;
 
       /**
-       * Set to `true` to indicate that the customer isn't in your checkout flow during this payment attempt and can't authenticate. Use this parameter in scenarios where you collect card details and [charge them later](https://stripe.com/docs/payments/cards/charging-saved-cards). This parameter can only be used with [`confirm=true`](https://stripe.com/docs/api/payment_intents/create#create_payment_intent-confirm).
+       * Set to `true` to indicate that the customer isn't in your checkout flow during this payment attempt and can't authenticate. Use this parameter in scenarios where you collect card details and [charge them later](https://docs.stripe.com/payments/cards/charging-saved-cards). This parameter can only be used with [`confirm=true`](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-confirm).
        */
       off_session?: boolean | PaymentIntentCreateParams.OffSession;
 
       /**
-       * The Stripe account ID that these funds are intended for. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * The Stripe account ID that these funds are intended for. Learn more about the [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       on_behalf_of?: string;
 
       /**
-       * ID of the payment method (a PaymentMethod, Card, or [compatible Source](https://stripe.com/docs/payments/payment-methods#compatibility) object) to attach to this PaymentIntent.
+       * Provides industry-specific information about the charge.
+       */
+      payment_details?: PaymentIntentCreateParams.PaymentDetails;
+
+      /**
+       * ID of the payment method (a PaymentMethod, Card, or [compatible Source](https://docs.stripe.com/payments/payment-methods#compatibility) object) to attach to this PaymentIntent.
        *
        * If you don't provide the `payment_method` parameter or the `source` parameter with `confirm=true`, `source` automatically populates with `customer.default_source` to improve migration for users of the Charges API. We recommend that you explicitly provide the `payment_method` moving forward.
-       * If the payment method is attached to a Customer, you must also provide the ID of that Customer as the [customer](https://stripe.com/docs/api#create_payment_intent-customer) parameter of this PaymentIntent.
+       * If the payment method is attached to a Customer, you must also provide the ID of that Customer as the [customer](https://api.stripe.com#create_payment_intent-customer) parameter of this PaymentIntent.
        * end
        */
       payment_method?: string;
 
       /**
-       * The ID of the [payment method configuration](https://stripe.com/docs/api/payment_method_configurations) to use with this PaymentIntent.
+       * The ID of the [payment method configuration](https://docs.stripe.com/api/payment_method_configurations) to use with this PaymentIntent.
        */
       payment_method_configuration?: string;
 
       /**
        * If provided, this hash will be used to create a PaymentMethod. The new PaymentMethod will appear
-       * in the [payment_method](https://stripe.com/docs/api/payment_intents/object#payment_intent_object-payment_method)
+       * in the [payment_method](https://docs.stripe.com/api/payment_intents/object#payment_intent_object-payment_method)
        * property on the PaymentIntent.
        */
       payment_method_data?: PaymentIntentCreateParams.PaymentMethodData;
@@ -133,7 +157,7 @@ declare module 'stripe' {
       payment_method_types?: Array<string>;
 
       /**
-       * Options to configure Radar. Learn more about [Radar Sessions](https://stripe.com/docs/radar/radar-session).
+       * Options to configure Radar. Learn more about [Radar Sessions](https://docs.stripe.com/radar/radar-session).
        */
       radar_options?: PaymentIntentCreateParams.RadarOptions;
 
@@ -143,7 +167,7 @@ declare module 'stripe' {
       receipt_email?: string;
 
       /**
-       * The URL to redirect your customer back to after they authenticate or cancel their payment on the payment method's app or site. If you'd prefer to redirect to a mobile application, you can alternatively supply an application URI scheme. This parameter can only be used with [`confirm=true`](https://stripe.com/docs/api/payment_intents/create#create_payment_intent-confirm).
+       * The URL to redirect your customer back to after they authenticate or cancel their payment on the payment method's app or site. If you'd prefer to redirect to a mobile application, you can alternatively supply an application URI scheme. This parameter can only be used with [`confirm=true`](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-confirm).
        */
       return_url?: string;
 
@@ -177,12 +201,12 @@ declare module 'stripe' {
 
       /**
        * The parameters that you can use to automatically create a Transfer.
-       * Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * Learn more about the [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       transfer_data?: PaymentIntentCreateParams.TransferData;
 
       /**
-       * A string that identifies the resulting payment as part of a group. Learn more about the [use case for connected accounts](https://stripe.com/docs/connect/separate-charges-and-transfers).
+       * A string that identifies the resulting payment as part of a group. Learn more about the [use case for connected accounts](https://docs.stripe.com/connect/separate-charges-and-transfers).
        */
       transfer_group?: string;
 
@@ -193,11 +217,201 @@ declare module 'stripe' {
     }
 
     namespace PaymentIntentCreateParams {
+      interface AmountDetails {
+        /**
+         * The total discount applied on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+         *
+         * This field is mutually exclusive with the `amount_details[line_items][#][discount_amount]` field.
+         */
+        discount_amount?: Stripe.Emptyable<number>;
+
+        /**
+         * A list of line items, each containing information about a product in the PaymentIntent. There is a maximum of 200 line items.
+         */
+        line_items?: Stripe.Emptyable<Array<AmountDetails.LineItem>>;
+
+        /**
+         * Contains information about the shipping portion of the amount.
+         */
+        shipping?: Stripe.Emptyable<AmountDetails.Shipping>;
+
+        /**
+         * Contains information about the tax portion of the amount.
+         */
+        tax?: Stripe.Emptyable<AmountDetails.Tax>;
+      }
+
+      namespace AmountDetails {
+        interface LineItem {
+          /**
+           * The discount applied on this line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+           *
+           * This field is mutually exclusive with the `amount_details[discount_amount]` field.
+           */
+          discount_amount?: number;
+
+          /**
+           * Payment method-specific information for line items.
+           */
+          payment_method_options?: LineItem.PaymentMethodOptions;
+
+          /**
+           * The product code of the line item, such as an SKU. Required for L3 rates. At most 12 characters long.
+           */
+          product_code?: string;
+
+          /**
+           * The product name of the line item. Required for L3 rates. At most 1024 characters long.
+           *
+           * For Cards, this field is truncated to 26 alphanumeric characters before being sent to the card networks. For Paypal, this field is truncated to 127 characters.
+           */
+          product_name: string;
+
+          /**
+           * The quantity of items. Required for L3 rates. An integer greater than 0.
+           */
+          quantity: number;
+
+          /**
+           * Contains information about the tax on the item.
+           */
+          tax?: LineItem.Tax;
+
+          /**
+           * The unit cost of the line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+           */
+          unit_cost: number;
+
+          /**
+           * A unit of measure for the line item, such as gallons, feet, meters, etc.
+           */
+          unit_of_measure?: string;
+        }
+
+        namespace LineItem {
+          interface PaymentMethodOptions {
+            /**
+             * This sub-hash contains line item details that are specific to `card` payment method."
+             */
+            card?: PaymentMethodOptions.Card;
+
+            /**
+             * This sub-hash contains line item details that are specific to `card_present` payment method."
+             */
+            card_present?: PaymentMethodOptions.CardPresent;
+
+            /**
+             * This sub-hash contains line item details that are specific to `klarna` payment method."
+             */
+            klarna?: PaymentMethodOptions.Klarna;
+
+            /**
+             * This sub-hash contains line item details that are specific to `paypal` payment method."
+             */
+            paypal?: PaymentMethodOptions.Paypal;
+          }
+
+          namespace PaymentMethodOptions {
+            interface Card {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface CardPresent {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface Klarna {
+              /**
+               * URL to an image for the product. Max length, 4096 characters.
+               */
+              image_url?: string;
+
+              /**
+               * URL to the product page. Max length, 4096 characters.
+               */
+              product_url?: string;
+
+              /**
+               * Unique reference for this line item to correlate it with your system's internal records. The field is displayed in the Klarna Consumer App if passed.
+               */
+              reference?: string;
+
+              /**
+               * Reference for the subscription this line item is for.
+               */
+              subscription_reference?: string;
+            }
+
+            interface Paypal {
+              /**
+               * Type of the line item.
+               */
+              category?: Paypal.Category;
+
+              /**
+               * Description of the line item.
+               */
+              description?: string;
+
+              /**
+               * The Stripe account ID of the connected account that sells the item.
+               */
+              sold_by?: string;
+            }
+
+            namespace Paypal {
+              type Category = 'digital_goods' | 'donation' | 'physical_goods';
+            }
+          }
+
+          interface Tax {
+            /**
+             * The total amount of tax on a single line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+             *
+             * This field is mutually exclusive with the `amount_details[tax][total_tax_amount]` field.
+             */
+            total_tax_amount: number;
+          }
+        }
+
+        interface Shipping {
+          /**
+           * If a physical good is being shipped, the cost of shipping represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than or equal to 0.
+           */
+          amount?: Stripe.Emptyable<number>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped from. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          from_postal_code?: Stripe.Emptyable<string>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped to. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          to_postal_code?: Stripe.Emptyable<string>;
+        }
+
+        interface Tax {
+          /**
+           * The total amount of tax on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L2 rates. An integer greater than or equal to 0.
+           *
+           * This field is mutually exclusive with the `amount_details[line_items][#][tax][total_tax_amount]` field.
+           */
+          total_tax_amount: number;
+        }
+      }
+
       interface AutomaticPaymentMethods {
         /**
          * Controls whether this PaymentIntent will accept redirect-based payment methods.
          *
-         * Redirect-based payment methods may require your customer to be redirected to a payment method's app or site for authentication or additional steps. To [confirm](https://stripe.com/docs/api/payment_intents/confirm) this PaymentIntent, you may be required to provide a `return_url` to redirect customers back to your site after they authenticate or complete the payment.
+         * Redirect-based payment methods may require your customer to be redirected to a payment method's app or site for authentication or additional steps. To [confirm](https://docs.stripe.com/api/payment_intents/confirm) this PaymentIntent, you may be required to provide a `return_url` to redirect customers back to your site after they authenticate or complete the payment.
          */
         allow_redirects?: AutomaticPaymentMethods.AllowRedirects;
 
@@ -252,6 +466,7 @@ declare module 'stripe' {
         | 'payco'
         | 'paynow'
         | 'paypal'
+        | 'payto'
         | 'pix'
         | 'promptpay'
         | 'revolut_pay'
@@ -264,6 +479,31 @@ declare module 'stripe' {
         | 'us_bank_account'
         | 'wechat_pay'
         | 'zip';
+
+      interface Hooks {
+        /**
+         * Arguments passed in automations
+         */
+        inputs?: Hooks.Inputs;
+      }
+
+      namespace Hooks {
+        interface Inputs {
+          /**
+           * Tax arguments for automations
+           */
+          tax?: Inputs.Tax;
+        }
+
+        namespace Inputs {
+          interface Tax {
+            /**
+             * The [TaxCalculation](https://docs.stripe.com/api/tax/calculations) id
+             */
+            calculation: Stripe.Emptyable<string>;
+          }
+        }
+      }
 
       interface MandateData {
         /**
@@ -315,6 +555,24 @@ declare module 'stripe' {
       }
 
       type OffSession = 'one_off' | 'recurring';
+
+      interface PaymentDetails {
+        /**
+         * A unique value to identify the customer. This field is available only for card payments.
+         *
+         * This field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks.
+         */
+        customer_reference?: Stripe.Emptyable<string>;
+
+        /**
+         * A unique value assigned by the business to identify the transaction. Required for L2 and L3 rates.
+         *
+         * Required when the Payment Method Types array contains `card`, including when [automatic_payment_methods.enabled](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-automatic_payment_methods-enabled) is set to `true`.
+         *
+         * For Cards, this field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks. For Klarna, this field is truncated to 255 characters and is visible to customers when they view the order in the Klarna app.
+         */
+        order_reference?: Stripe.Emptyable<string>;
+      }
 
       interface PaymentMethodData {
         /**
@@ -463,7 +721,7 @@ declare module 'stripe' {
         mb_way?: PaymentMethodData.MbWay;
 
         /**
-         * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+         * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
          */
         metadata?: Stripe.MetadataParam;
 
@@ -518,6 +776,11 @@ declare module 'stripe' {
         paypal?: PaymentMethodData.Paypal;
 
         /**
+         * If this is a `payto` PaymentMethod, this hash contains details about the PayTo payment method.
+         */
+        payto?: PaymentMethodData.Payto;
+
+        /**
          * If this is a `pix` PaymentMethod, this hash contains details about the Pix payment method.
          */
         pix?: PaymentMethodData.Pix;
@@ -528,7 +791,7 @@ declare module 'stripe' {
         promptpay?: PaymentMethodData.Promptpay;
 
         /**
-         * Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
+         * Options to configure Radar. See [Radar Session](https://docs.stripe.com/radar/radar-session) for more information.
          */
         radar_options?: PaymentMethodData.RadarOptions;
 
@@ -784,9 +1047,11 @@ declare module 'stripe' {
             | 'asn_bank'
             | 'bunq'
             | 'buut'
+            | 'finom'
             | 'handelsbanken'
             | 'ing'
             | 'knab'
+            | 'mollie'
             | 'moneyou'
             | 'n26'
             | 'nn'
@@ -928,13 +1193,30 @@ declare module 'stripe' {
 
         interface Paypal {}
 
+        interface Payto {
+          /**
+           * The account number for the bank account.
+           */
+          account_number?: string;
+
+          /**
+           * Bank-State-Branch number of the bank account.
+           */
+          bsb_number?: string;
+
+          /**
+           * The PayID alias for the bank account.
+           */
+          pay_id?: string;
+        }
+
         interface Pix {}
 
         interface Promptpay {}
 
         interface RadarOptions {
           /**
-           * A [Radar Session](https://stripe.com/docs/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
+           * A [Radar Session](https://docs.stripe.com/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
            */
           session?: string;
         }
@@ -1004,6 +1286,7 @@ declare module 'stripe' {
           | 'payco'
           | 'paynow'
           | 'paypal'
+          | 'payto'
           | 'pix'
           | 'promptpay'
           | 'revolut_pay'
@@ -1254,6 +1537,11 @@ declare module 'stripe' {
          * If this is a `paypal` PaymentMethod, this sub-hash contains details about the PayPal payment method options.
          */
         paypal?: Stripe.Emptyable<PaymentMethodOptions.Paypal>;
+
+        /**
+         * If this is a `payto` PaymentMethod, this sub-hash contains details about the PayTo payment method options.
+         */
+        payto?: Stripe.Emptyable<PaymentMethodOptions.Payto>;
 
         /**
          * If this is a `pix` PaymentMethod, this sub-hash contains details about the Pix payment method options.
@@ -1657,7 +1945,7 @@ declare module 'stripe' {
           /**
            * Installment configuration for payments attempted on this PaymentIntent.
            *
-           * For more information, see the [installments integration guide](https://stripe.com/docs/payments/installments).
+           * For more information, see the [installments integration guide](https://docs.stripe.com/payments/installments).
            */
           installments?: Card.Installments;
 
@@ -1679,27 +1967,27 @@ declare module 'stripe' {
           network?: Card.Network;
 
           /**
-           * Request ability to [capture beyond the standard authorization validity window](https://stripe.com/docs/payments/extended-authorization) for this PaymentIntent.
+           * Request ability to [capture beyond the standard authorization validity window](https://docs.stripe.com/payments/extended-authorization) for this PaymentIntent.
            */
           request_extended_authorization?: Card.RequestExtendedAuthorization;
 
           /**
-           * Request ability to [increment the authorization](https://stripe.com/docs/payments/incremental-authorization) for this PaymentIntent.
+           * Request ability to [increment the authorization](https://docs.stripe.com/payments/incremental-authorization) for this PaymentIntent.
            */
           request_incremental_authorization?: Card.RequestIncrementalAuthorization;
 
           /**
-           * Request ability to make [multiple captures](https://stripe.com/docs/payments/multicapture) for this PaymentIntent.
+           * Request ability to make [multiple captures](https://docs.stripe.com/payments/multicapture) for this PaymentIntent.
            */
           request_multicapture?: Card.RequestMulticapture;
 
           /**
-           * Request ability to [overcapture](https://stripe.com/docs/payments/overcapture) for this PaymentIntent.
+           * Request ability to [overcapture](https://docs.stripe.com/payments/overcapture) for this PaymentIntent.
            */
           request_overcapture?: Card.RequestOvercapture;
 
           /**
-           * We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure/authentication-flow#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+           * We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://docs.stripe.com/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://docs.stripe.com/payments/3d-secure/authentication-flow#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
            */
           request_three_d_secure?: Card.RequestThreeDSecure;
 
@@ -1957,12 +2245,21 @@ declare module 'stripe' {
 
         interface CardPresent {
           /**
-           * Request ability to capture this payment beyond the standard [authorization validity window](https://stripe.com/docs/terminal/features/extended-authorizations#authorization-validity)
+           * Controls when the funds are captured from the customer's account.
+           *
+           * If provided, this parameter overrides the behavior of the top-level [capture_method](https://docs.stripe.com/api/payment_intents/update#update_payment_intent-capture_method) for this payment method type when finalizing the payment with this payment method type.
+           *
+           * If `capture_method` is already set on the PaymentIntent, providing an empty value for this parameter unsets the stored value for this payment method type.
+           */
+          capture_method?: CardPresent.CaptureMethod;
+
+          /**
+           * Request ability to capture this payment beyond the standard [authorization validity window](https://docs.stripe.com/terminal/features/extended-authorizations#authorization-validity)
            */
           request_extended_authorization?: boolean;
 
           /**
-           * Request ability to [increment](https://stripe.com/docs/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://stripe.com/docs/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://stripe.com/docs/api/payment_intents/confirm) response to verify support.
+           * Request ability to [increment](https://docs.stripe.com/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://docs.stripe.com/api/payment_intents/confirm) response to verify support.
            */
           request_incremental_authorization_support?: boolean;
 
@@ -1973,6 +2270,8 @@ declare module 'stripe' {
         }
 
         namespace CardPresent {
+          type CaptureMethod = 'manual' | 'manual_preferred';
+
           interface Routing {
             /**
              * Routing requested priority
@@ -2645,7 +2944,7 @@ declare module 'stripe' {
           capture_method?: Stripe.Emptyable<'manual'>;
 
           /**
-           * [Preferred locale](https://stripe.com/docs/payments/paypal/supported-locales) of the PayPal checkout page that the customer is redirected to.
+           * [Preferred locale](https://docs.stripe.com/payments/paypal/supported-locales) of the PayPal checkout page that the customer is redirected to.
            */
           preferred_locale?: Paypal.PreferredLocale;
 
@@ -2696,6 +2995,89 @@ declare module 'stripe' {
             | 'pt-PT'
             | 'sk-SK'
             | 'sv-SE';
+
+          type SetupFutureUsage = 'none' | 'off_session';
+        }
+
+        interface Payto {
+          /**
+           * Additional fields for Mandate creation. Only `purpose` field is configurable for PayTo PaymentIntent with `setup_future_usage=none`. Other fields are only applicable to PayTo PaymentIntent with `setup_future_usage=off_session`
+           */
+          mandate_options?: Payto.MandateOptions;
+
+          /**
+           * Indicates that you intend to make future payments with this PaymentIntent's payment method.
+           *
+           * If you provide a Customer with the PaymentIntent, you can use this parameter to [attach the payment method](https://docs.stripe.com/payments/save-during-payment) to the Customer after the PaymentIntent is confirmed and the customer completes any required actions. If you don't provide a Customer, you can still [attach](https://docs.stripe.com/api/payment_methods/attach) the payment method to a Customer after the transaction completes.
+           *
+           * If the payment method is `card_present` and isn't a digital wallet, Stripe creates and attaches a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card to the Customer instead.
+           *
+           * When processing card payments, Stripe uses `setup_future_usage` to help you comply with regional legislation and network rules, such as [SCA](https://docs.stripe.com/strong-customer-authentication).
+           *
+           * If you've already set `setup_future_usage` and you're performing a request using a publishable key, you can only update the value from `on_session` to `off_session`.
+           */
+          setup_future_usage?: Stripe.Emptyable<Payto.SetupFutureUsage>;
+        }
+
+        namespace Payto {
+          interface MandateOptions {
+            /**
+             * Amount that will be collected. It is required when `amount_type` is `fixed`.
+             */
+            amount?: Stripe.Emptyable<number>;
+
+            /**
+             * The type of amount that will be collected. The amount charged must be exact or up to the value of `amount` param for `fixed` or `maximum` type respectively. Defaults to `maximum`.
+             */
+            amount_type?: Stripe.Emptyable<MandateOptions.AmountType>;
+
+            /**
+             * Date, in YYYY-MM-DD format, after which payments will not be collected. Defaults to no end date.
+             */
+            end_date?: Stripe.Emptyable<string>;
+
+            /**
+             * The periodicity at which payments will be collected. Defaults to `adhoc`.
+             */
+            payment_schedule?: Stripe.Emptyable<MandateOptions.PaymentSchedule>;
+
+            /**
+             * The number of payments that will be made during a payment period. Defaults to 1 except for when `payment_schedule` is `adhoc`. In that case, it defaults to no limit.
+             */
+            payments_per_period?: Stripe.Emptyable<number>;
+
+            /**
+             * The purpose for which payments are made. Has a default value based on your merchant category code.
+             */
+            purpose?: Stripe.Emptyable<MandateOptions.Purpose>;
+          }
+
+          namespace MandateOptions {
+            type AmountType = 'fixed' | 'maximum';
+
+            type PaymentSchedule =
+              | 'adhoc'
+              | 'annual'
+              | 'daily'
+              | 'fortnightly'
+              | 'monthly'
+              | 'quarterly'
+              | 'semi_annual'
+              | 'weekly';
+
+            type Purpose =
+              | 'dependant_support'
+              | 'government'
+              | 'loan'
+              | 'mortgage'
+              | 'other'
+              | 'pension'
+              | 'personal'
+              | 'retail'
+              | 'salary'
+              | 'tax'
+              | 'utility';
+          }
 
           type SetupFutureUsage = 'none' | 'off_session';
         }
@@ -3064,7 +3446,7 @@ declare module 'stripe' {
 
       interface RadarOptions {
         /**
-         * A [Radar Session](https://stripe.com/docs/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
+         * A [Radar Session](https://docs.stripe.com/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
          */
         session?: string;
       }
@@ -3105,7 +3487,7 @@ declare module 'stripe' {
          * the full amount is transferred.
          *
          * If you intend to collect a fee and you need a more robust reporting experience, using
-         * [application_fee_amount](https://stripe.com/docs/api/payment_intents/create#create_payment_intent-application_fee_amount)
+         * [application_fee_amount](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-application_fee_amount)
          * might be a better fit for your integration.
          */
         amount?: number;
@@ -3134,12 +3516,19 @@ declare module 'stripe' {
 
     interface PaymentIntentUpdateParams {
       /**
-       * Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99).
+       * Amount intended to be collected by this PaymentIntent. A positive integer representing how much to charge in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal) (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 US or [equivalent in charge currency](https://docs.stripe.com/currencies#minimum-and-maximum-charge-amounts). The amount value supports up to eight digits (e.g., a value of 99999999 for a USD charge of $999,999.99).
        */
       amount?: number;
 
       /**
-       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * Provides industry-specific information about the amount.
+       */
+      amount_details?: Stripe.Emptyable<
+        PaymentIntentUpdateParams.AmountDetails
+      >;
+
+      /**
+       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       application_fee_amount?: Stripe.Emptyable<number>;
 
@@ -3158,9 +3547,18 @@ declare module 'stripe' {
        *
        * Payment methods attached to other Customers cannot be used with this PaymentIntent.
        *
-       * If [setup_future_usage](https://stripe.com/docs/api#payment_intent_object-setup_future_usage) is set and this PaymentIntent's payment method is not `card_present`, then the payment method attaches to the Customer after the PaymentIntent has been confirmed and any required actions from the user are complete. If the payment method is `card_present` and isn't a digital wallet, then a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card is created and attached to the Customer instead.
+       * If [setup_future_usage](https://api.stripe.com#payment_intent_object-setup_future_usage) is set and this PaymentIntent's payment method is not `card_present`, then the payment method attaches to the Customer after the PaymentIntent has been confirmed and any required actions from the user are complete. If the payment method is `card_present` and isn't a digital wallet, then a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card is created and attached to the Customer instead.
        */
       customer?: string;
+
+      /**
+       * ID of the Account representing the customer that this PaymentIntent belongs to, if one exists.
+       *
+       * Payment methods attached to other Accounts cannot be used with this PaymentIntent.
+       *
+       * If [setup_future_usage](https://api.stripe.com#payment_intent_object-setup_future_usage) is set and this PaymentIntent's payment method is not `card_present`, then the payment method attaches to the Account after the PaymentIntent has been confirmed and any required actions from the user are complete. If the payment method is `card_present` and isn't a digital wallet, then a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card is created and attached to the Account instead.
+       */
+      customer_account?: string;
 
       /**
        * An arbitrary string attached to the object. Often useful for displaying to users.
@@ -3180,23 +3578,35 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Automations to be run during the PaymentIntent lifecycle
+       */
+      hooks?: PaymentIntentUpdateParams.Hooks;
+
+      /**
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
       /**
-       * ID of the payment method (a PaymentMethod, Card, or [compatible Source](https://stripe.com/docs/payments/payment-methods/transitioning#compatibility) object) to attach to this PaymentIntent. To unset this field to null, pass in an empty string.
+       * Provides industry-specific information about the charge.
+       */
+      payment_details?: Stripe.Emptyable<
+        PaymentIntentUpdateParams.PaymentDetails
+      >;
+
+      /**
+       * ID of the payment method (a PaymentMethod, Card, or [compatible Source](https://docs.stripe.com/payments/payment-methods/transitioning#compatibility) object) to attach to this PaymentIntent. To unset this field to null, pass in an empty string.
        */
       payment_method?: string;
 
       /**
-       * The ID of the [payment method configuration](https://stripe.com/docs/api/payment_method_configurations) to use with this PaymentIntent.
+       * The ID of the [payment method configuration](https://docs.stripe.com/api/payment_method_configurations) to use with this PaymentIntent.
        */
       payment_method_configuration?: string;
 
       /**
        * If provided, this hash will be used to create a PaymentMethod. The new PaymentMethod will appear
-       * in the [payment_method](https://stripe.com/docs/api/payment_intents/object#payment_intent_object-payment_method)
+       * in the [payment_method](https://docs.stripe.com/api/payment_intents/object#payment_intent_object-payment_method)
        * property on the PaymentIntent.
        */
       payment_method_data?: PaymentIntentUpdateParams.PaymentMethodData;
@@ -3249,17 +3659,207 @@ declare module 'stripe' {
       statement_descriptor_suffix?: string;
 
       /**
-       * Use this parameter to automatically create a Transfer when the payment succeeds. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * Use this parameter to automatically create a Transfer when the payment succeeds. Learn more about the [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       transfer_data?: PaymentIntentUpdateParams.TransferData;
 
       /**
-       * A string that identifies the resulting payment as part of a group. You can only provide `transfer_group` if it hasn't been set. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * A string that identifies the resulting payment as part of a group. You can only provide `transfer_group` if it hasn't been set. Learn more about the [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       transfer_group?: string;
     }
 
     namespace PaymentIntentUpdateParams {
+      interface AmountDetails {
+        /**
+         * The total discount applied on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+         *
+         * This field is mutually exclusive with the `amount_details[line_items][#][discount_amount]` field.
+         */
+        discount_amount?: Stripe.Emptyable<number>;
+
+        /**
+         * A list of line items, each containing information about a product in the PaymentIntent. There is a maximum of 200 line items.
+         */
+        line_items?: Stripe.Emptyable<Array<AmountDetails.LineItem>>;
+
+        /**
+         * Contains information about the shipping portion of the amount.
+         */
+        shipping?: Stripe.Emptyable<AmountDetails.Shipping>;
+
+        /**
+         * Contains information about the tax portion of the amount.
+         */
+        tax?: Stripe.Emptyable<AmountDetails.Tax>;
+      }
+
+      namespace AmountDetails {
+        interface LineItem {
+          /**
+           * The discount applied on this line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+           *
+           * This field is mutually exclusive with the `amount_details[discount_amount]` field.
+           */
+          discount_amount?: number;
+
+          /**
+           * Payment method-specific information for line items.
+           */
+          payment_method_options?: LineItem.PaymentMethodOptions;
+
+          /**
+           * The product code of the line item, such as an SKU. Required for L3 rates. At most 12 characters long.
+           */
+          product_code?: string;
+
+          /**
+           * The product name of the line item. Required for L3 rates. At most 1024 characters long.
+           *
+           * For Cards, this field is truncated to 26 alphanumeric characters before being sent to the card networks. For Paypal, this field is truncated to 127 characters.
+           */
+          product_name: string;
+
+          /**
+           * The quantity of items. Required for L3 rates. An integer greater than 0.
+           */
+          quantity: number;
+
+          /**
+           * Contains information about the tax on the item.
+           */
+          tax?: LineItem.Tax;
+
+          /**
+           * The unit cost of the line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+           */
+          unit_cost: number;
+
+          /**
+           * A unit of measure for the line item, such as gallons, feet, meters, etc.
+           */
+          unit_of_measure?: string;
+        }
+
+        namespace LineItem {
+          interface PaymentMethodOptions {
+            /**
+             * This sub-hash contains line item details that are specific to `card` payment method."
+             */
+            card?: PaymentMethodOptions.Card;
+
+            /**
+             * This sub-hash contains line item details that are specific to `card_present` payment method."
+             */
+            card_present?: PaymentMethodOptions.CardPresent;
+
+            /**
+             * This sub-hash contains line item details that are specific to `klarna` payment method."
+             */
+            klarna?: PaymentMethodOptions.Klarna;
+
+            /**
+             * This sub-hash contains line item details that are specific to `paypal` payment method."
+             */
+            paypal?: PaymentMethodOptions.Paypal;
+          }
+
+          namespace PaymentMethodOptions {
+            interface Card {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface CardPresent {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface Klarna {
+              /**
+               * URL to an image for the product. Max length, 4096 characters.
+               */
+              image_url?: string;
+
+              /**
+               * URL to the product page. Max length, 4096 characters.
+               */
+              product_url?: string;
+
+              /**
+               * Unique reference for this line item to correlate it with your system's internal records. The field is displayed in the Klarna Consumer App if passed.
+               */
+              reference?: string;
+
+              /**
+               * Reference for the subscription this line item is for.
+               */
+              subscription_reference?: string;
+            }
+
+            interface Paypal {
+              /**
+               * Type of the line item.
+               */
+              category?: Paypal.Category;
+
+              /**
+               * Description of the line item.
+               */
+              description?: string;
+
+              /**
+               * The Stripe account ID of the connected account that sells the item.
+               */
+              sold_by?: string;
+            }
+
+            namespace Paypal {
+              type Category = 'digital_goods' | 'donation' | 'physical_goods';
+            }
+          }
+
+          interface Tax {
+            /**
+             * The total amount of tax on a single line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+             *
+             * This field is mutually exclusive with the `amount_details[tax][total_tax_amount]` field.
+             */
+            total_tax_amount: number;
+          }
+        }
+
+        interface Shipping {
+          /**
+           * If a physical good is being shipped, the cost of shipping represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than or equal to 0.
+           */
+          amount?: Stripe.Emptyable<number>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped from. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          from_postal_code?: Stripe.Emptyable<string>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped to. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          to_postal_code?: Stripe.Emptyable<string>;
+        }
+
+        interface Tax {
+          /**
+           * The total amount of tax on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L2 rates. An integer greater than or equal to 0.
+           *
+           * This field is mutually exclusive with the `amount_details[line_items][#][tax][total_tax_amount]` field.
+           */
+          total_tax_amount: number;
+        }
+      }
+
       type CaptureMethod = 'automatic' | 'automatic_async' | 'manual';
 
       type ExcludedPaymentMethodType =
@@ -3299,6 +3899,7 @@ declare module 'stripe' {
         | 'payco'
         | 'paynow'
         | 'paypal'
+        | 'payto'
         | 'pix'
         | 'promptpay'
         | 'revolut_pay'
@@ -3311,6 +3912,49 @@ declare module 'stripe' {
         | 'us_bank_account'
         | 'wechat_pay'
         | 'zip';
+
+      interface Hooks {
+        /**
+         * Arguments passed in automations
+         */
+        inputs?: Hooks.Inputs;
+      }
+
+      namespace Hooks {
+        interface Inputs {
+          /**
+           * Tax arguments for automations
+           */
+          tax?: Inputs.Tax;
+        }
+
+        namespace Inputs {
+          interface Tax {
+            /**
+             * The [TaxCalculation](https://docs.stripe.com/api/tax/calculations) id
+             */
+            calculation: Stripe.Emptyable<string>;
+          }
+        }
+      }
+
+      interface PaymentDetails {
+        /**
+         * A unique value to identify the customer. This field is available only for card payments.
+         *
+         * This field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks.
+         */
+        customer_reference?: Stripe.Emptyable<string>;
+
+        /**
+         * A unique value assigned by the business to identify the transaction. Required for L2 and L3 rates.
+         *
+         * Required when the Payment Method Types array contains `card`, including when [automatic_payment_methods.enabled](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-automatic_payment_methods-enabled) is set to `true`.
+         *
+         * For Cards, this field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks. For Klarna, this field is truncated to 255 characters and is visible to customers when they view the order in the Klarna app.
+         */
+        order_reference?: Stripe.Emptyable<string>;
+      }
 
       interface PaymentMethodData {
         /**
@@ -3459,7 +4103,7 @@ declare module 'stripe' {
         mb_way?: PaymentMethodData.MbWay;
 
         /**
-         * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+         * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
          */
         metadata?: Stripe.MetadataParam;
 
@@ -3514,6 +4158,11 @@ declare module 'stripe' {
         paypal?: PaymentMethodData.Paypal;
 
         /**
+         * If this is a `payto` PaymentMethod, this hash contains details about the PayTo payment method.
+         */
+        payto?: PaymentMethodData.Payto;
+
+        /**
          * If this is a `pix` PaymentMethod, this hash contains details about the Pix payment method.
          */
         pix?: PaymentMethodData.Pix;
@@ -3524,7 +4173,7 @@ declare module 'stripe' {
         promptpay?: PaymentMethodData.Promptpay;
 
         /**
-         * Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
+         * Options to configure Radar. See [Radar Session](https://docs.stripe.com/radar/radar-session) for more information.
          */
         radar_options?: PaymentMethodData.RadarOptions;
 
@@ -3780,9 +4429,11 @@ declare module 'stripe' {
             | 'asn_bank'
             | 'bunq'
             | 'buut'
+            | 'finom'
             | 'handelsbanken'
             | 'ing'
             | 'knab'
+            | 'mollie'
             | 'moneyou'
             | 'n26'
             | 'nn'
@@ -3924,13 +4575,30 @@ declare module 'stripe' {
 
         interface Paypal {}
 
+        interface Payto {
+          /**
+           * The account number for the bank account.
+           */
+          account_number?: string;
+
+          /**
+           * Bank-State-Branch number of the bank account.
+           */
+          bsb_number?: string;
+
+          /**
+           * The PayID alias for the bank account.
+           */
+          pay_id?: string;
+        }
+
         interface Pix {}
 
         interface Promptpay {}
 
         interface RadarOptions {
           /**
-           * A [Radar Session](https://stripe.com/docs/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
+           * A [Radar Session](https://docs.stripe.com/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
            */
           session?: string;
         }
@@ -4000,6 +4668,7 @@ declare module 'stripe' {
           | 'payco'
           | 'paynow'
           | 'paypal'
+          | 'payto'
           | 'pix'
           | 'promptpay'
           | 'revolut_pay'
@@ -4250,6 +4919,11 @@ declare module 'stripe' {
          * If this is a `paypal` PaymentMethod, this sub-hash contains details about the PayPal payment method options.
          */
         paypal?: Stripe.Emptyable<PaymentMethodOptions.Paypal>;
+
+        /**
+         * If this is a `payto` PaymentMethod, this sub-hash contains details about the PayTo payment method options.
+         */
+        payto?: Stripe.Emptyable<PaymentMethodOptions.Payto>;
 
         /**
          * If this is a `pix` PaymentMethod, this sub-hash contains details about the Pix payment method options.
@@ -4653,7 +5327,7 @@ declare module 'stripe' {
           /**
            * Installment configuration for payments attempted on this PaymentIntent.
            *
-           * For more information, see the [installments integration guide](https://stripe.com/docs/payments/installments).
+           * For more information, see the [installments integration guide](https://docs.stripe.com/payments/installments).
            */
           installments?: Card.Installments;
 
@@ -4675,27 +5349,27 @@ declare module 'stripe' {
           network?: Card.Network;
 
           /**
-           * Request ability to [capture beyond the standard authorization validity window](https://stripe.com/docs/payments/extended-authorization) for this PaymentIntent.
+           * Request ability to [capture beyond the standard authorization validity window](https://docs.stripe.com/payments/extended-authorization) for this PaymentIntent.
            */
           request_extended_authorization?: Card.RequestExtendedAuthorization;
 
           /**
-           * Request ability to [increment the authorization](https://stripe.com/docs/payments/incremental-authorization) for this PaymentIntent.
+           * Request ability to [increment the authorization](https://docs.stripe.com/payments/incremental-authorization) for this PaymentIntent.
            */
           request_incremental_authorization?: Card.RequestIncrementalAuthorization;
 
           /**
-           * Request ability to make [multiple captures](https://stripe.com/docs/payments/multicapture) for this PaymentIntent.
+           * Request ability to make [multiple captures](https://docs.stripe.com/payments/multicapture) for this PaymentIntent.
            */
           request_multicapture?: Card.RequestMulticapture;
 
           /**
-           * Request ability to [overcapture](https://stripe.com/docs/payments/overcapture) for this PaymentIntent.
+           * Request ability to [overcapture](https://docs.stripe.com/payments/overcapture) for this PaymentIntent.
            */
           request_overcapture?: Card.RequestOvercapture;
 
           /**
-           * We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure/authentication-flow#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+           * We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://docs.stripe.com/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://docs.stripe.com/payments/3d-secure/authentication-flow#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
            */
           request_three_d_secure?: Card.RequestThreeDSecure;
 
@@ -4953,12 +5627,21 @@ declare module 'stripe' {
 
         interface CardPresent {
           /**
-           * Request ability to capture this payment beyond the standard [authorization validity window](https://stripe.com/docs/terminal/features/extended-authorizations#authorization-validity)
+           * Controls when the funds are captured from the customer's account.
+           *
+           * If provided, this parameter overrides the behavior of the top-level [capture_method](https://docs.stripe.com/api/payment_intents/update#update_payment_intent-capture_method) for this payment method type when finalizing the payment with this payment method type.
+           *
+           * If `capture_method` is already set on the PaymentIntent, providing an empty value for this parameter unsets the stored value for this payment method type.
+           */
+          capture_method?: CardPresent.CaptureMethod;
+
+          /**
+           * Request ability to capture this payment beyond the standard [authorization validity window](https://docs.stripe.com/terminal/features/extended-authorizations#authorization-validity)
            */
           request_extended_authorization?: boolean;
 
           /**
-           * Request ability to [increment](https://stripe.com/docs/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://stripe.com/docs/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://stripe.com/docs/api/payment_intents/confirm) response to verify support.
+           * Request ability to [increment](https://docs.stripe.com/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://docs.stripe.com/api/payment_intents/confirm) response to verify support.
            */
           request_incremental_authorization_support?: boolean;
 
@@ -4969,6 +5652,8 @@ declare module 'stripe' {
         }
 
         namespace CardPresent {
+          type CaptureMethod = 'manual' | 'manual_preferred';
+
           interface Routing {
             /**
              * Routing requested priority
@@ -5641,7 +6326,7 @@ declare module 'stripe' {
           capture_method?: Stripe.Emptyable<'manual'>;
 
           /**
-           * [Preferred locale](https://stripe.com/docs/payments/paypal/supported-locales) of the PayPal checkout page that the customer is redirected to.
+           * [Preferred locale](https://docs.stripe.com/payments/paypal/supported-locales) of the PayPal checkout page that the customer is redirected to.
            */
           preferred_locale?: Paypal.PreferredLocale;
 
@@ -5692,6 +6377,89 @@ declare module 'stripe' {
             | 'pt-PT'
             | 'sk-SK'
             | 'sv-SE';
+
+          type SetupFutureUsage = 'none' | 'off_session';
+        }
+
+        interface Payto {
+          /**
+           * Additional fields for Mandate creation. Only `purpose` field is configurable for PayTo PaymentIntent with `setup_future_usage=none`. Other fields are only applicable to PayTo PaymentIntent with `setup_future_usage=off_session`
+           */
+          mandate_options?: Payto.MandateOptions;
+
+          /**
+           * Indicates that you intend to make future payments with this PaymentIntent's payment method.
+           *
+           * If you provide a Customer with the PaymentIntent, you can use this parameter to [attach the payment method](https://docs.stripe.com/payments/save-during-payment) to the Customer after the PaymentIntent is confirmed and the customer completes any required actions. If you don't provide a Customer, you can still [attach](https://docs.stripe.com/api/payment_methods/attach) the payment method to a Customer after the transaction completes.
+           *
+           * If the payment method is `card_present` and isn't a digital wallet, Stripe creates and attaches a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card to the Customer instead.
+           *
+           * When processing card payments, Stripe uses `setup_future_usage` to help you comply with regional legislation and network rules, such as [SCA](https://docs.stripe.com/strong-customer-authentication).
+           *
+           * If you've already set `setup_future_usage` and you're performing a request using a publishable key, you can only update the value from `on_session` to `off_session`.
+           */
+          setup_future_usage?: Stripe.Emptyable<Payto.SetupFutureUsage>;
+        }
+
+        namespace Payto {
+          interface MandateOptions {
+            /**
+             * Amount that will be collected. It is required when `amount_type` is `fixed`.
+             */
+            amount?: Stripe.Emptyable<number>;
+
+            /**
+             * The type of amount that will be collected. The amount charged must be exact or up to the value of `amount` param for `fixed` or `maximum` type respectively. Defaults to `maximum`.
+             */
+            amount_type?: Stripe.Emptyable<MandateOptions.AmountType>;
+
+            /**
+             * Date, in YYYY-MM-DD format, after which payments will not be collected. Defaults to no end date.
+             */
+            end_date?: Stripe.Emptyable<string>;
+
+            /**
+             * The periodicity at which payments will be collected. Defaults to `adhoc`.
+             */
+            payment_schedule?: Stripe.Emptyable<MandateOptions.PaymentSchedule>;
+
+            /**
+             * The number of payments that will be made during a payment period. Defaults to 1 except for when `payment_schedule` is `adhoc`. In that case, it defaults to no limit.
+             */
+            payments_per_period?: Stripe.Emptyable<number>;
+
+            /**
+             * The purpose for which payments are made. Has a default value based on your merchant category code.
+             */
+            purpose?: Stripe.Emptyable<MandateOptions.Purpose>;
+          }
+
+          namespace MandateOptions {
+            type AmountType = 'fixed' | 'maximum';
+
+            type PaymentSchedule =
+              | 'adhoc'
+              | 'annual'
+              | 'daily'
+              | 'fortnightly'
+              | 'monthly'
+              | 'quarterly'
+              | 'semi_annual'
+              | 'weekly';
+
+            type Purpose =
+              | 'dependant_support'
+              | 'government'
+              | 'loan'
+              | 'mortgage'
+              | 'other'
+              | 'pension'
+              | 'personal'
+              | 'retail'
+              | 'salary'
+              | 'tax'
+              | 'utility';
+          }
 
           type SetupFutureUsage = 'none' | 'off_session';
         }
@@ -6107,6 +6875,11 @@ declare module 'stripe' {
       customer?: string;
 
       /**
+       * Only return PaymentIntents for the account representing the customer that this ID specifies.
+       */
+      customer_account?: string;
+
+      /**
        * Specifies which fields in the response should be expanded.
        */
       expand?: Array<string>;
@@ -6116,7 +6889,7 @@ declare module 'stripe' {
       /**
        * Amount that you intend to apply to this PaymentIntent from the customer's cash balance. If the PaymentIntent was created by an Invoice, the full amount of the PaymentIntent is applied regardless of this parameter.
        *
-       * A positive integer representing how much to charge in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal) (for example, 100 cents to charge 1 USD or 100 to charge 100 JPY, a zero-decimal currency). The maximum amount is the amount of the PaymentIntent.
+       * A positive integer representing how much to charge in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal) (for example, 100 cents to charge 1 USD or 100 to charge 100 JPY, a zero-decimal currency). The maximum amount is the amount of the PaymentIntent.
        *
        * When you omit the amount, it defaults to the remaining amount requested on the PaymentIntent.
        */
@@ -6155,12 +6928,17 @@ declare module 'stripe' {
 
     interface PaymentIntentCaptureParams {
       /**
+       * Provides industry-specific information about the amount.
+       */
+      amount_details?: PaymentIntentCaptureParams.AmountDetails;
+
+      /**
        * The amount to capture from the PaymentIntent, which must be less than or equal to the original amount. Defaults to the full `amount_capturable` if it's not provided.
        */
       amount_to_capture?: number;
 
       /**
-       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       application_fee_amount?: number;
 
@@ -6170,14 +6948,26 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Defaults to `true`. When capturing a PaymentIntent, setting `final_capture` to `false` notifies Stripe to not release the remaining uncaptured funds to make sure that they're captured in future requests. You can only use this setting when [multicapture](https://stripe.com/docs/payments/multicapture) is available for PaymentIntents.
+       * Defaults to `true`. When capturing a PaymentIntent, setting `final_capture` to `false` notifies Stripe to not release the remaining uncaptured funds to make sure that they're captured in future requests. You can only use this setting when [multicapture](https://docs.stripe.com/payments/multicapture) is available for PaymentIntents.
        */
       final_capture?: boolean;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Automations to be run during the PaymentIntent lifecycle
+       */
+      hooks?: PaymentIntentCaptureParams.Hooks;
+
+      /**
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
+
+      /**
+       * Provides industry-specific information about the charge.
+       */
+      payment_details?: Stripe.Emptyable<
+        PaymentIntentCaptureParams.PaymentDetails
+      >;
 
       /**
        * Text that appears on the customer's statement as the statement descriptor for a non-card charge. This value overrides the account's default statement descriptor. For information about requirements, including the 22-character limit, see [the Statement Descriptor docs](https://docs.stripe.com/get-started/account/statement-descriptors).
@@ -6193,12 +6983,245 @@ declare module 'stripe' {
 
       /**
        * The parameters that you can use to automatically create a transfer after the payment
-       * is captured. Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * is captured. Learn more about the [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       transfer_data?: PaymentIntentCaptureParams.TransferData;
     }
 
     namespace PaymentIntentCaptureParams {
+      interface AmountDetails {
+        /**
+         * The total discount applied on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+         *
+         * This field is mutually exclusive with the `amount_details[line_items][#][discount_amount]` field.
+         */
+        discount_amount?: Stripe.Emptyable<number>;
+
+        /**
+         * A list of line items, each containing information about a product in the PaymentIntent. There is a maximum of 200 line items.
+         */
+        line_items?: Stripe.Emptyable<Array<AmountDetails.LineItem>>;
+
+        /**
+         * Contains information about the shipping portion of the amount.
+         */
+        shipping?: Stripe.Emptyable<AmountDetails.Shipping>;
+
+        /**
+         * Contains information about the tax portion of the amount.
+         */
+        tax?: Stripe.Emptyable<AmountDetails.Tax>;
+      }
+
+      namespace AmountDetails {
+        interface LineItem {
+          /**
+           * The discount applied on this line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+           *
+           * This field is mutually exclusive with the `amount_details[discount_amount]` field.
+           */
+          discount_amount?: number;
+
+          /**
+           * Payment method-specific information for line items.
+           */
+          payment_method_options?: LineItem.PaymentMethodOptions;
+
+          /**
+           * The product code of the line item, such as an SKU. Required for L3 rates. At most 12 characters long.
+           */
+          product_code?: string;
+
+          /**
+           * The product name of the line item. Required for L3 rates. At most 1024 characters long.
+           *
+           * For Cards, this field is truncated to 26 alphanumeric characters before being sent to the card networks. For Paypal, this field is truncated to 127 characters.
+           */
+          product_name: string;
+
+          /**
+           * The quantity of items. Required for L3 rates. An integer greater than 0.
+           */
+          quantity: number;
+
+          /**
+           * Contains information about the tax on the item.
+           */
+          tax?: LineItem.Tax;
+
+          /**
+           * The unit cost of the line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+           */
+          unit_cost: number;
+
+          /**
+           * A unit of measure for the line item, such as gallons, feet, meters, etc.
+           */
+          unit_of_measure?: string;
+        }
+
+        namespace LineItem {
+          interface PaymentMethodOptions {
+            /**
+             * This sub-hash contains line item details that are specific to `card` payment method."
+             */
+            card?: PaymentMethodOptions.Card;
+
+            /**
+             * This sub-hash contains line item details that are specific to `card_present` payment method."
+             */
+            card_present?: PaymentMethodOptions.CardPresent;
+
+            /**
+             * This sub-hash contains line item details that are specific to `klarna` payment method."
+             */
+            klarna?: PaymentMethodOptions.Klarna;
+
+            /**
+             * This sub-hash contains line item details that are specific to `paypal` payment method."
+             */
+            paypal?: PaymentMethodOptions.Paypal;
+          }
+
+          namespace PaymentMethodOptions {
+            interface Card {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface CardPresent {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface Klarna {
+              /**
+               * URL to an image for the product. Max length, 4096 characters.
+               */
+              image_url?: string;
+
+              /**
+               * URL to the product page. Max length, 4096 characters.
+               */
+              product_url?: string;
+
+              /**
+               * Unique reference for this line item to correlate it with your system's internal records. The field is displayed in the Klarna Consumer App if passed.
+               */
+              reference?: string;
+
+              /**
+               * Reference for the subscription this line item is for.
+               */
+              subscription_reference?: string;
+            }
+
+            interface Paypal {
+              /**
+               * Type of the line item.
+               */
+              category?: Paypal.Category;
+
+              /**
+               * Description of the line item.
+               */
+              description?: string;
+
+              /**
+               * The Stripe account ID of the connected account that sells the item.
+               */
+              sold_by?: string;
+            }
+
+            namespace Paypal {
+              type Category = 'digital_goods' | 'donation' | 'physical_goods';
+            }
+          }
+
+          interface Tax {
+            /**
+             * The total amount of tax on a single line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+             *
+             * This field is mutually exclusive with the `amount_details[tax][total_tax_amount]` field.
+             */
+            total_tax_amount: number;
+          }
+        }
+
+        interface Shipping {
+          /**
+           * If a physical good is being shipped, the cost of shipping represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than or equal to 0.
+           */
+          amount?: Stripe.Emptyable<number>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped from. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          from_postal_code?: Stripe.Emptyable<string>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped to. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          to_postal_code?: Stripe.Emptyable<string>;
+        }
+
+        interface Tax {
+          /**
+           * The total amount of tax on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L2 rates. An integer greater than or equal to 0.
+           *
+           * This field is mutually exclusive with the `amount_details[line_items][#][tax][total_tax_amount]` field.
+           */
+          total_tax_amount: number;
+        }
+      }
+
+      interface Hooks {
+        /**
+         * Arguments passed in automations
+         */
+        inputs?: Hooks.Inputs;
+      }
+
+      namespace Hooks {
+        interface Inputs {
+          /**
+           * Tax arguments for automations
+           */
+          tax?: Inputs.Tax;
+        }
+
+        namespace Inputs {
+          interface Tax {
+            /**
+             * The [TaxCalculation](https://docs.stripe.com/api/tax/calculations) id
+             */
+            calculation: Stripe.Emptyable<string>;
+          }
+        }
+      }
+
+      interface PaymentDetails {
+        /**
+         * A unique value to identify the customer. This field is available only for card payments.
+         *
+         * This field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks.
+         */
+        customer_reference?: Stripe.Emptyable<string>;
+
+        /**
+         * A unique value assigned by the business to identify the transaction. Required for L2 and L3 rates.
+         *
+         * Required when the Payment Method Types array contains `card`, including when [automatic_payment_methods.enabled](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-automatic_payment_methods-enabled) is set to `true`.
+         *
+         * For Cards, this field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks. For Klarna, this field is truncated to 255 characters and is visible to customers when they view the order in the Klarna app.
+         */
+        order_reference?: Stripe.Emptyable<string>;
+      }
+
       interface TransferData {
         /**
          * The amount that will be transferred automatically when a charge succeeds.
@@ -6208,6 +7231,13 @@ declare module 'stripe' {
     }
 
     interface PaymentIntentConfirmParams {
+      /**
+       * Provides industry-specific information about the amount.
+       */
+      amount_details?: Stripe.Emptyable<
+        PaymentIntentConfirmParams.AmountDetails
+      >;
+
       /**
        * Controls when the funds will be captured from the customer's account.
        */
@@ -6221,7 +7251,7 @@ declare module 'stripe' {
       confirmation_token?: string;
 
       /**
-       * Set to `true` to fail the payment attempt if the PaymentIntent transitions into `requires_action`. This parameter is intended for simpler integrations that do not handle customer actions, like [saving cards without authentication](https://stripe.com/docs/payments/save-card-without-authentication).
+       * Set to `true` to fail the payment attempt if the PaymentIntent transitions into `requires_action`. This parameter is intended for simpler integrations that do not handle customer actions, like [saving cards without authentication](https://docs.stripe.com/payments/save-card-without-authentication).
        */
       error_on_requires_action?: boolean;
 
@@ -6238,6 +7268,11 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
+       * Automations to be run during the PaymentIntent lifecycle
+       */
+      hooks?: PaymentIntentConfirmParams.Hooks;
+
+      /**
        * ID of the mandate that's used for this payment.
        */
       mandate?: string;
@@ -6245,19 +7280,26 @@ declare module 'stripe' {
       mandate_data?: Stripe.Emptyable<PaymentIntentConfirmParams.MandateData>;
 
       /**
-       * Set to `true` to indicate that the customer isn't in your checkout flow during this payment attempt and can't authenticate. Use this parameter in scenarios where you collect card details and [charge them later](https://stripe.com/docs/payments/cards/charging-saved-cards).
+       * Set to `true` to indicate that the customer isn't in your checkout flow during this payment attempt and can't authenticate. Use this parameter in scenarios where you collect card details and [charge them later](https://docs.stripe.com/payments/cards/charging-saved-cards).
        */
       off_session?: boolean | PaymentIntentConfirmParams.OffSession;
 
       /**
-       * ID of the payment method (a PaymentMethod, Card, or [compatible Source](https://stripe.com/docs/payments/payment-methods/transitioning#compatibility) object) to attach to this PaymentIntent.
-       * If the payment method is attached to a Customer, it must match the [customer](https://stripe.com/docs/api#create_payment_intent-customer) that is set on this PaymentIntent.
+       * Provides industry-specific information about the charge.
+       */
+      payment_details?: Stripe.Emptyable<
+        PaymentIntentConfirmParams.PaymentDetails
+      >;
+
+      /**
+       * ID of the payment method (a PaymentMethod, Card, or [compatible Source](https://docs.stripe.com/payments/payment-methods/transitioning#compatibility) object) to attach to this PaymentIntent.
+       * If the payment method is attached to a Customer, it must match the [customer](https://api.stripe.com#create_payment_intent-customer) that is set on this PaymentIntent.
        */
       payment_method?: string;
 
       /**
        * If provided, this hash will be used to create a PaymentMethod. The new PaymentMethod will appear
-       * in the [payment_method](https://stripe.com/docs/api/payment_intents/object#payment_intent_object-payment_method)
+       * in the [payment_method](https://docs.stripe.com/api/payment_intents/object#payment_intent_object-payment_method)
        * property on the PaymentIntent.
        */
       payment_method_data?: PaymentIntentConfirmParams.PaymentMethodData;
@@ -6273,7 +7315,7 @@ declare module 'stripe' {
       payment_method_types?: Array<string>;
 
       /**
-       * Options to configure Radar. Learn more about [Radar Sessions](https://stripe.com/docs/radar/radar-session).
+       * Options to configure Radar. Learn more about [Radar Sessions](https://docs.stripe.com/radar/radar-session).
        */
       radar_options?: PaymentIntentConfirmParams.RadarOptions;
 
@@ -6316,6 +7358,196 @@ declare module 'stripe' {
     }
 
     namespace PaymentIntentConfirmParams {
+      interface AmountDetails {
+        /**
+         * The total discount applied on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+         *
+         * This field is mutually exclusive with the `amount_details[line_items][#][discount_amount]` field.
+         */
+        discount_amount?: Stripe.Emptyable<number>;
+
+        /**
+         * A list of line items, each containing information about a product in the PaymentIntent. There is a maximum of 200 line items.
+         */
+        line_items?: Stripe.Emptyable<Array<AmountDetails.LineItem>>;
+
+        /**
+         * Contains information about the shipping portion of the amount.
+         */
+        shipping?: Stripe.Emptyable<AmountDetails.Shipping>;
+
+        /**
+         * Contains information about the tax portion of the amount.
+         */
+        tax?: Stripe.Emptyable<AmountDetails.Tax>;
+      }
+
+      namespace AmountDetails {
+        interface LineItem {
+          /**
+           * The discount applied on this line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+           *
+           * This field is mutually exclusive with the `amount_details[discount_amount]` field.
+           */
+          discount_amount?: number;
+
+          /**
+           * Payment method-specific information for line items.
+           */
+          payment_method_options?: LineItem.PaymentMethodOptions;
+
+          /**
+           * The product code of the line item, such as an SKU. Required for L3 rates. At most 12 characters long.
+           */
+          product_code?: string;
+
+          /**
+           * The product name of the line item. Required for L3 rates. At most 1024 characters long.
+           *
+           * For Cards, this field is truncated to 26 alphanumeric characters before being sent to the card networks. For Paypal, this field is truncated to 127 characters.
+           */
+          product_name: string;
+
+          /**
+           * The quantity of items. Required for L3 rates. An integer greater than 0.
+           */
+          quantity: number;
+
+          /**
+           * Contains information about the tax on the item.
+           */
+          tax?: LineItem.Tax;
+
+          /**
+           * The unit cost of the line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+           */
+          unit_cost: number;
+
+          /**
+           * A unit of measure for the line item, such as gallons, feet, meters, etc.
+           */
+          unit_of_measure?: string;
+        }
+
+        namespace LineItem {
+          interface PaymentMethodOptions {
+            /**
+             * This sub-hash contains line item details that are specific to `card` payment method."
+             */
+            card?: PaymentMethodOptions.Card;
+
+            /**
+             * This sub-hash contains line item details that are specific to `card_present` payment method."
+             */
+            card_present?: PaymentMethodOptions.CardPresent;
+
+            /**
+             * This sub-hash contains line item details that are specific to `klarna` payment method."
+             */
+            klarna?: PaymentMethodOptions.Klarna;
+
+            /**
+             * This sub-hash contains line item details that are specific to `paypal` payment method."
+             */
+            paypal?: PaymentMethodOptions.Paypal;
+          }
+
+          namespace PaymentMethodOptions {
+            interface Card {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface CardPresent {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface Klarna {
+              /**
+               * URL to an image for the product. Max length, 4096 characters.
+               */
+              image_url?: string;
+
+              /**
+               * URL to the product page. Max length, 4096 characters.
+               */
+              product_url?: string;
+
+              /**
+               * Unique reference for this line item to correlate it with your system's internal records. The field is displayed in the Klarna Consumer App if passed.
+               */
+              reference?: string;
+
+              /**
+               * Reference for the subscription this line item is for.
+               */
+              subscription_reference?: string;
+            }
+
+            interface Paypal {
+              /**
+               * Type of the line item.
+               */
+              category?: Paypal.Category;
+
+              /**
+               * Description of the line item.
+               */
+              description?: string;
+
+              /**
+               * The Stripe account ID of the connected account that sells the item.
+               */
+              sold_by?: string;
+            }
+
+            namespace Paypal {
+              type Category = 'digital_goods' | 'donation' | 'physical_goods';
+            }
+          }
+
+          interface Tax {
+            /**
+             * The total amount of tax on a single line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+             *
+             * This field is mutually exclusive with the `amount_details[tax][total_tax_amount]` field.
+             */
+            total_tax_amount: number;
+          }
+        }
+
+        interface Shipping {
+          /**
+           * If a physical good is being shipped, the cost of shipping represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than or equal to 0.
+           */
+          amount?: Stripe.Emptyable<number>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped from. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          from_postal_code?: Stripe.Emptyable<string>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped to. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          to_postal_code?: Stripe.Emptyable<string>;
+        }
+
+        interface Tax {
+          /**
+           * The total amount of tax on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L2 rates. An integer greater than or equal to 0.
+           *
+           * This field is mutually exclusive with the `amount_details[line_items][#][tax][total_tax_amount]` field.
+           */
+          total_tax_amount: number;
+        }
+      }
+
       type CaptureMethod = 'automatic' | 'automatic_async' | 'manual';
 
       type ExcludedPaymentMethodType =
@@ -6355,6 +7587,7 @@ declare module 'stripe' {
         | 'payco'
         | 'paynow'
         | 'paypal'
+        | 'payto'
         | 'pix'
         | 'promptpay'
         | 'revolut_pay'
@@ -6367,6 +7600,31 @@ declare module 'stripe' {
         | 'us_bank_account'
         | 'wechat_pay'
         | 'zip';
+
+      interface Hooks {
+        /**
+         * Arguments passed in automations
+         */
+        inputs?: Hooks.Inputs;
+      }
+
+      namespace Hooks {
+        interface Inputs {
+          /**
+           * Tax arguments for automations
+           */
+          tax?: Inputs.Tax;
+        }
+
+        namespace Inputs {
+          interface Tax {
+            /**
+             * The [TaxCalculation](https://docs.stripe.com/api/tax/calculations) id
+             */
+            calculation: Stripe.Emptyable<string>;
+          }
+        }
+      }
 
       interface MandateData {
         /**
@@ -6418,6 +7676,24 @@ declare module 'stripe' {
       }
 
       type OffSession = 'one_off' | 'recurring';
+
+      interface PaymentDetails {
+        /**
+         * A unique value to identify the customer. This field is available only for card payments.
+         *
+         * This field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks.
+         */
+        customer_reference?: Stripe.Emptyable<string>;
+
+        /**
+         * A unique value assigned by the business to identify the transaction. Required for L2 and L3 rates.
+         *
+         * Required when the Payment Method Types array contains `card`, including when [automatic_payment_methods.enabled](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-automatic_payment_methods-enabled) is set to `true`.
+         *
+         * For Cards, this field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks. For Klarna, this field is truncated to 255 characters and is visible to customers when they view the order in the Klarna app.
+         */
+        order_reference?: Stripe.Emptyable<string>;
+      }
 
       interface PaymentMethodData {
         /**
@@ -6566,7 +7842,7 @@ declare module 'stripe' {
         mb_way?: PaymentMethodData.MbWay;
 
         /**
-         * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+         * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
          */
         metadata?: Stripe.MetadataParam;
 
@@ -6621,6 +7897,11 @@ declare module 'stripe' {
         paypal?: PaymentMethodData.Paypal;
 
         /**
+         * If this is a `payto` PaymentMethod, this hash contains details about the PayTo payment method.
+         */
+        payto?: PaymentMethodData.Payto;
+
+        /**
          * If this is a `pix` PaymentMethod, this hash contains details about the Pix payment method.
          */
         pix?: PaymentMethodData.Pix;
@@ -6631,7 +7912,7 @@ declare module 'stripe' {
         promptpay?: PaymentMethodData.Promptpay;
 
         /**
-         * Options to configure Radar. See [Radar Session](https://stripe.com/docs/radar/radar-session) for more information.
+         * Options to configure Radar. See [Radar Session](https://docs.stripe.com/radar/radar-session) for more information.
          */
         radar_options?: PaymentMethodData.RadarOptions;
 
@@ -6887,9 +8168,11 @@ declare module 'stripe' {
             | 'asn_bank'
             | 'bunq'
             | 'buut'
+            | 'finom'
             | 'handelsbanken'
             | 'ing'
             | 'knab'
+            | 'mollie'
             | 'moneyou'
             | 'n26'
             | 'nn'
@@ -7031,13 +8314,30 @@ declare module 'stripe' {
 
         interface Paypal {}
 
+        interface Payto {
+          /**
+           * The account number for the bank account.
+           */
+          account_number?: string;
+
+          /**
+           * Bank-State-Branch number of the bank account.
+           */
+          bsb_number?: string;
+
+          /**
+           * The PayID alias for the bank account.
+           */
+          pay_id?: string;
+        }
+
         interface Pix {}
 
         interface Promptpay {}
 
         interface RadarOptions {
           /**
-           * A [Radar Session](https://stripe.com/docs/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
+           * A [Radar Session](https://docs.stripe.com/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
            */
           session?: string;
         }
@@ -7107,6 +8407,7 @@ declare module 'stripe' {
           | 'payco'
           | 'paynow'
           | 'paypal'
+          | 'payto'
           | 'pix'
           | 'promptpay'
           | 'revolut_pay'
@@ -7357,6 +8658,11 @@ declare module 'stripe' {
          * If this is a `paypal` PaymentMethod, this sub-hash contains details about the PayPal payment method options.
          */
         paypal?: Stripe.Emptyable<PaymentMethodOptions.Paypal>;
+
+        /**
+         * If this is a `payto` PaymentMethod, this sub-hash contains details about the PayTo payment method options.
+         */
+        payto?: Stripe.Emptyable<PaymentMethodOptions.Payto>;
 
         /**
          * If this is a `pix` PaymentMethod, this sub-hash contains details about the Pix payment method options.
@@ -7760,7 +9066,7 @@ declare module 'stripe' {
           /**
            * Installment configuration for payments attempted on this PaymentIntent.
            *
-           * For more information, see the [installments integration guide](https://stripe.com/docs/payments/installments).
+           * For more information, see the [installments integration guide](https://docs.stripe.com/payments/installments).
            */
           installments?: Card.Installments;
 
@@ -7782,27 +9088,27 @@ declare module 'stripe' {
           network?: Card.Network;
 
           /**
-           * Request ability to [capture beyond the standard authorization validity window](https://stripe.com/docs/payments/extended-authorization) for this PaymentIntent.
+           * Request ability to [capture beyond the standard authorization validity window](https://docs.stripe.com/payments/extended-authorization) for this PaymentIntent.
            */
           request_extended_authorization?: Card.RequestExtendedAuthorization;
 
           /**
-           * Request ability to [increment the authorization](https://stripe.com/docs/payments/incremental-authorization) for this PaymentIntent.
+           * Request ability to [increment the authorization](https://docs.stripe.com/payments/incremental-authorization) for this PaymentIntent.
            */
           request_incremental_authorization?: Card.RequestIncrementalAuthorization;
 
           /**
-           * Request ability to make [multiple captures](https://stripe.com/docs/payments/multicapture) for this PaymentIntent.
+           * Request ability to make [multiple captures](https://docs.stripe.com/payments/multicapture) for this PaymentIntent.
            */
           request_multicapture?: Card.RequestMulticapture;
 
           /**
-           * Request ability to [overcapture](https://stripe.com/docs/payments/overcapture) for this PaymentIntent.
+           * Request ability to [overcapture](https://docs.stripe.com/payments/overcapture) for this PaymentIntent.
            */
           request_overcapture?: Card.RequestOvercapture;
 
           /**
-           * We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://stripe.com/docs/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://stripe.com/docs/payments/3d-secure/authentication-flow#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
+           * We strongly recommend that you rely on our SCA Engine to automatically prompt your customers for authentication based on risk level and [other requirements](https://docs.stripe.com/strong-customer-authentication). However, if you wish to request 3D Secure based on logic from your own fraud engine, provide this option. If not provided, this value defaults to `automatic`. Read our guide on [manually requesting 3D Secure](https://docs.stripe.com/payments/3d-secure/authentication-flow#manual-three-ds) for more information on how this configuration interacts with Radar and our SCA Engine.
            */
           request_three_d_secure?: Card.RequestThreeDSecure;
 
@@ -8060,12 +9366,21 @@ declare module 'stripe' {
 
         interface CardPresent {
           /**
-           * Request ability to capture this payment beyond the standard [authorization validity window](https://stripe.com/docs/terminal/features/extended-authorizations#authorization-validity)
+           * Controls when the funds are captured from the customer's account.
+           *
+           * If provided, this parameter overrides the behavior of the top-level [capture_method](https://docs.stripe.com/api/payment_intents/update#update_payment_intent-capture_method) for this payment method type when finalizing the payment with this payment method type.
+           *
+           * If `capture_method` is already set on the PaymentIntent, providing an empty value for this parameter unsets the stored value for this payment method type.
+           */
+          capture_method?: CardPresent.CaptureMethod;
+
+          /**
+           * Request ability to capture this payment beyond the standard [authorization validity window](https://docs.stripe.com/terminal/features/extended-authorizations#authorization-validity)
            */
           request_extended_authorization?: boolean;
 
           /**
-           * Request ability to [increment](https://stripe.com/docs/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://stripe.com/docs/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://stripe.com/docs/api/payment_intents/confirm) response to verify support.
+           * Request ability to [increment](https://docs.stripe.com/terminal/features/incremental-authorizations) this PaymentIntent if the combination of MCC and card brand is eligible. Check [incremental_authorization_supported](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-incremental_authorization_supported) in the [Confirm](https://docs.stripe.com/api/payment_intents/confirm) response to verify support.
            */
           request_incremental_authorization_support?: boolean;
 
@@ -8076,6 +9391,8 @@ declare module 'stripe' {
         }
 
         namespace CardPresent {
+          type CaptureMethod = 'manual' | 'manual_preferred';
+
           interface Routing {
             /**
              * Routing requested priority
@@ -8748,7 +10065,7 @@ declare module 'stripe' {
           capture_method?: Stripe.Emptyable<'manual'>;
 
           /**
-           * [Preferred locale](https://stripe.com/docs/payments/paypal/supported-locales) of the PayPal checkout page that the customer is redirected to.
+           * [Preferred locale](https://docs.stripe.com/payments/paypal/supported-locales) of the PayPal checkout page that the customer is redirected to.
            */
           preferred_locale?: Paypal.PreferredLocale;
 
@@ -8799,6 +10116,89 @@ declare module 'stripe' {
             | 'pt-PT'
             | 'sk-SK'
             | 'sv-SE';
+
+          type SetupFutureUsage = 'none' | 'off_session';
+        }
+
+        interface Payto {
+          /**
+           * Additional fields for Mandate creation. Only `purpose` field is configurable for PayTo PaymentIntent with `setup_future_usage=none`. Other fields are only applicable to PayTo PaymentIntent with `setup_future_usage=off_session`
+           */
+          mandate_options?: Payto.MandateOptions;
+
+          /**
+           * Indicates that you intend to make future payments with this PaymentIntent's payment method.
+           *
+           * If you provide a Customer with the PaymentIntent, you can use this parameter to [attach the payment method](https://docs.stripe.com/payments/save-during-payment) to the Customer after the PaymentIntent is confirmed and the customer completes any required actions. If you don't provide a Customer, you can still [attach](https://docs.stripe.com/api/payment_methods/attach) the payment method to a Customer after the transaction completes.
+           *
+           * If the payment method is `card_present` and isn't a digital wallet, Stripe creates and attaches a [generated_card](https://docs.stripe.com/api/charges/object#charge_object-payment_method_details-card_present-generated_card) payment method representing the card to the Customer instead.
+           *
+           * When processing card payments, Stripe uses `setup_future_usage` to help you comply with regional legislation and network rules, such as [SCA](https://docs.stripe.com/strong-customer-authentication).
+           *
+           * If you've already set `setup_future_usage` and you're performing a request using a publishable key, you can only update the value from `on_session` to `off_session`.
+           */
+          setup_future_usage?: Stripe.Emptyable<Payto.SetupFutureUsage>;
+        }
+
+        namespace Payto {
+          interface MandateOptions {
+            /**
+             * Amount that will be collected. It is required when `amount_type` is `fixed`.
+             */
+            amount?: Stripe.Emptyable<number>;
+
+            /**
+             * The type of amount that will be collected. The amount charged must be exact or up to the value of `amount` param for `fixed` or `maximum` type respectively. Defaults to `maximum`.
+             */
+            amount_type?: Stripe.Emptyable<MandateOptions.AmountType>;
+
+            /**
+             * Date, in YYYY-MM-DD format, after which payments will not be collected. Defaults to no end date.
+             */
+            end_date?: Stripe.Emptyable<string>;
+
+            /**
+             * The periodicity at which payments will be collected. Defaults to `adhoc`.
+             */
+            payment_schedule?: Stripe.Emptyable<MandateOptions.PaymentSchedule>;
+
+            /**
+             * The number of payments that will be made during a payment period. Defaults to 1 except for when `payment_schedule` is `adhoc`. In that case, it defaults to no limit.
+             */
+            payments_per_period?: Stripe.Emptyable<number>;
+
+            /**
+             * The purpose for which payments are made. Has a default value based on your merchant category code.
+             */
+            purpose?: Stripe.Emptyable<MandateOptions.Purpose>;
+          }
+
+          namespace MandateOptions {
+            type AmountType = 'fixed' | 'maximum';
+
+            type PaymentSchedule =
+              | 'adhoc'
+              | 'annual'
+              | 'daily'
+              | 'fortnightly'
+              | 'monthly'
+              | 'quarterly'
+              | 'semi_annual'
+              | 'weekly';
+
+            type Purpose =
+              | 'dependant_support'
+              | 'government'
+              | 'loan'
+              | 'mortgage'
+              | 'other'
+              | 'pension'
+              | 'personal'
+              | 'retail'
+              | 'salary'
+              | 'tax'
+              | 'utility';
+          }
 
           type SetupFutureUsage = 'none' | 'off_session';
         }
@@ -9167,7 +10567,7 @@ declare module 'stripe' {
 
       interface RadarOptions {
         /**
-         * A [Radar Session](https://stripe.com/docs/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
+         * A [Radar Session](https://docs.stripe.com/radar/radar-session) is a snapshot of the browser metadata and device details that help Radar make more accurate predictions on your payments.
          */
         session?: string;
       }
@@ -9209,7 +10609,12 @@ declare module 'stripe' {
       amount: number;
 
       /**
-       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * Provides industry-specific information about the amount.
+       */
+      amount_details?: PaymentIntentIncrementAuthorizationParams.AmountDetails;
+
+      /**
+       * The amount of the application fee (if any) that will be requested to be applied to the payment and transferred to the application owner's Stripe account. The amount of the application fee collected will be capped at the total amount captured. For more information, see the PaymentIntents [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       application_fee_amount?: number;
 
@@ -9224,9 +10629,19 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Automations to be run during the PaymentIntent lifecycle
+       */
+      hooks?: PaymentIntentIncrementAuthorizationParams.Hooks;
+
+      /**
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.MetadataParam;
+
+      /**
+       * Provides industry-specific information about the charge.
+       */
+      payment_details?: PaymentIntentIncrementAuthorizationParams.PaymentDetails;
 
       /**
        * Text that appears on the customer's statement as the statement descriptor for a non-card or card charge. This value overrides the account's default statement descriptor. For information about requirements, including the 22-character limit, see [the Statement Descriptor docs](https://docs.stripe.com/get-started/account/statement-descriptors).
@@ -9235,12 +10650,245 @@ declare module 'stripe' {
 
       /**
        * The parameters used to automatically create a transfer after the payment is captured.
-       * Learn more about the [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts).
+       * Learn more about the [use case for connected accounts](https://docs.stripe.com/payments/connected-accounts).
        */
       transfer_data?: PaymentIntentIncrementAuthorizationParams.TransferData;
     }
 
     namespace PaymentIntentIncrementAuthorizationParams {
+      interface AmountDetails {
+        /**
+         * The total discount applied on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+         *
+         * This field is mutually exclusive with the `amount_details[line_items][#][discount_amount]` field.
+         */
+        discount_amount?: Stripe.Emptyable<number>;
+
+        /**
+         * A list of line items, each containing information about a product in the PaymentIntent. There is a maximum of 200 line items.
+         */
+        line_items?: Stripe.Emptyable<Array<AmountDetails.LineItem>>;
+
+        /**
+         * Contains information about the shipping portion of the amount.
+         */
+        shipping?: Stripe.Emptyable<AmountDetails.Shipping>;
+
+        /**
+         * Contains information about the tax portion of the amount.
+         */
+        tax?: Stripe.Emptyable<AmountDetails.Tax>;
+      }
+
+      namespace AmountDetails {
+        interface LineItem {
+          /**
+           * The discount applied on this line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than 0.
+           *
+           * This field is mutually exclusive with the `amount_details[discount_amount]` field.
+           */
+          discount_amount?: number;
+
+          /**
+           * Payment method-specific information for line items.
+           */
+          payment_method_options?: LineItem.PaymentMethodOptions;
+
+          /**
+           * The product code of the line item, such as an SKU. Required for L3 rates. At most 12 characters long.
+           */
+          product_code?: string;
+
+          /**
+           * The product name of the line item. Required for L3 rates. At most 1024 characters long.
+           *
+           * For Cards, this field is truncated to 26 alphanumeric characters before being sent to the card networks. For Paypal, this field is truncated to 127 characters.
+           */
+          product_name: string;
+
+          /**
+           * The quantity of items. Required for L3 rates. An integer greater than 0.
+           */
+          quantity: number;
+
+          /**
+           * Contains information about the tax on the item.
+           */
+          tax?: LineItem.Tax;
+
+          /**
+           * The unit cost of the line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+           */
+          unit_cost: number;
+
+          /**
+           * A unit of measure for the line item, such as gallons, feet, meters, etc.
+           */
+          unit_of_measure?: string;
+        }
+
+        namespace LineItem {
+          interface PaymentMethodOptions {
+            /**
+             * This sub-hash contains line item details that are specific to `card` payment method."
+             */
+            card?: PaymentMethodOptions.Card;
+
+            /**
+             * This sub-hash contains line item details that are specific to `card_present` payment method."
+             */
+            card_present?: PaymentMethodOptions.CardPresent;
+
+            /**
+             * This sub-hash contains line item details that are specific to `klarna` payment method."
+             */
+            klarna?: PaymentMethodOptions.Klarna;
+
+            /**
+             * This sub-hash contains line item details that are specific to `paypal` payment method."
+             */
+            paypal?: PaymentMethodOptions.Paypal;
+          }
+
+          namespace PaymentMethodOptions {
+            interface Card {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface CardPresent {
+              /**
+               * Identifier that categorizes the items being purchased using a standardized commodity scheme such as (but not limited to) UNSPSC, NAICS, NAPCS, etc.
+               */
+              commodity_code?: string;
+            }
+
+            interface Klarna {
+              /**
+               * URL to an image for the product. Max length, 4096 characters.
+               */
+              image_url?: string;
+
+              /**
+               * URL to the product page. Max length, 4096 characters.
+               */
+              product_url?: string;
+
+              /**
+               * Unique reference for this line item to correlate it with your system's internal records. The field is displayed in the Klarna Consumer App if passed.
+               */
+              reference?: string;
+
+              /**
+               * Reference for the subscription this line item is for.
+               */
+              subscription_reference?: string;
+            }
+
+            interface Paypal {
+              /**
+               * Type of the line item.
+               */
+              category?: Paypal.Category;
+
+              /**
+               * Description of the line item.
+               */
+              description?: string;
+
+              /**
+               * The Stripe account ID of the connected account that sells the item.
+               */
+              sold_by?: string;
+            }
+
+            namespace Paypal {
+              type Category = 'digital_goods' | 'donation' | 'physical_goods';
+            }
+          }
+
+          interface Tax {
+            /**
+             * The total amount of tax on a single line item represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L3 rates. An integer greater than or equal to 0.
+             *
+             * This field is mutually exclusive with the `amount_details[tax][total_tax_amount]` field.
+             */
+            total_tax_amount: number;
+          }
+        }
+
+        interface Shipping {
+          /**
+           * If a physical good is being shipped, the cost of shipping represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). An integer greater than or equal to 0.
+           */
+          amount?: Stripe.Emptyable<number>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped from. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          from_postal_code?: Stripe.Emptyable<string>;
+
+          /**
+           * If a physical good is being shipped, the postal code of where it is being shipped to. At most 10 alphanumeric characters long, hyphens are allowed.
+           */
+          to_postal_code?: Stripe.Emptyable<string>;
+        }
+
+        interface Tax {
+          /**
+           * The total amount of tax on the transaction represented in the [smallest currency unit](https://docs.stripe.com/currencies#zero-decimal). Required for L2 rates. An integer greater than or equal to 0.
+           *
+           * This field is mutually exclusive with the `amount_details[line_items][#][tax][total_tax_amount]` field.
+           */
+          total_tax_amount: number;
+        }
+      }
+
+      interface Hooks {
+        /**
+         * Arguments passed in automations
+         */
+        inputs?: Hooks.Inputs;
+      }
+
+      namespace Hooks {
+        interface Inputs {
+          /**
+           * Tax arguments for automations
+           */
+          tax?: Inputs.Tax;
+        }
+
+        namespace Inputs {
+          interface Tax {
+            /**
+             * The [TaxCalculation](https://docs.stripe.com/api/tax/calculations) id
+             */
+            calculation: Stripe.Emptyable<string>;
+          }
+        }
+      }
+
+      interface PaymentDetails {
+        /**
+         * A unique value to identify the customer. This field is available only for card payments.
+         *
+         * This field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks.
+         */
+        customer_reference?: Stripe.Emptyable<string>;
+
+        /**
+         * A unique value assigned by the business to identify the transaction. Required for L2 and L3 rates.
+         *
+         * Required when the Payment Method Types array contains `card`, including when [automatic_payment_methods.enabled](https://docs.stripe.com/api/payment_intents/create#create_payment_intent-automatic_payment_methods-enabled) is set to `true`.
+         *
+         * For Cards, this field is truncated to 25 alphanumeric characters, excluding spaces, before being sent to card networks. For Klarna, this field is truncated to 255 characters and is visible to customers when they view the order in the Klarna app.
+         */
+        order_reference?: Stripe.Emptyable<string>;
+      }
+
       interface TransferData {
         /**
          * The amount that will be transferred automatically when a charge succeeds.
@@ -9249,9 +10897,17 @@ declare module 'stripe' {
       }
     }
 
+    interface PaymentIntentListAmountDetailsLineItemsParams
+      extends PaginationParams {
+      /**
+       * Specifies which fields in the response should be expanded.
+       */
+      expand?: Array<string>;
+    }
+
     interface PaymentIntentSearchParams {
       /**
-       * The search query string. See [search query language](https://stripe.com/docs/search#search-query-language) and the list of supported [query fields for payment intents](https://stripe.com/docs/search#query-fields-for-payment-intents).
+       * The search query string. See [search query language](https://docs.stripe.com/search#search-query-language) and the list of supported [query fields for payment intents](https://docs.stripe.com/search#query-fields-for-payment-intents).
        */
       query: string;
 
@@ -9467,6 +11123,19 @@ declare module 'stripe' {
         params: PaymentIntentIncrementAuthorizationParams,
         options?: RequestOptions
       ): Promise<Stripe.Response<Stripe.PaymentIntent>>;
+
+      /**
+       * Lists all LineItems of a given PaymentIntent.
+       */
+      listAmountDetailsLineItems(
+        id: string,
+        params?: PaymentIntentListAmountDetailsLineItemsParams,
+        options?: RequestOptions
+      ): ApiListPromise<Stripe.PaymentIntentAmountDetailsLineItem>;
+      listAmountDetailsLineItems(
+        id: string,
+        options?: RequestOptions
+      ): ApiListPromise<Stripe.PaymentIntentAmountDetailsLineItem>;
 
       /**
        * Search for PaymentIntents you've previously created using Stripe's [Search Query Language](https://docs.stripe.com/docs/search#search-query-language).

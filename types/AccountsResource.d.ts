@@ -4,7 +4,7 @@ declare module 'stripe' {
   namespace Stripe {
     interface AccountCreateParams {
       /**
-       * An [account token](https://stripe.com/docs/api#create_account_token), used to securely provide details to the account.
+       * An [account token](https://api.stripe.com#create_account_token), used to securely provide details to the account.
        */
       account_token?: string;
 
@@ -83,7 +83,7 @@ declare module 'stripe' {
       individual?: AccountCreateParams.Individual;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -427,6 +427,11 @@ declare module 'stripe' {
          * The paynow_payments capability.
          */
         paynow_payments?: Capabilities.PaynowPayments;
+
+        /**
+         * The payto_payments capability.
+         */
+        payto_payments?: Capabilities.PaytoPayments;
 
         /**
          * The pix_payments capability.
@@ -816,6 +821,13 @@ declare module 'stripe' {
           requested?: boolean;
         }
 
+        interface PaytoPayments {
+          /**
+           * Passing true requests the capability for the account, if it is not already requested. A requested capability may not immediately become active. Any requirements to activate the capability are returned in the `requirements` arrays.
+           */
+          requested?: boolean;
+        }
+
         interface PixPayments {
           /**
            * Passing true requests the capability for the account, if it is not already requested. A requested capability may not immediately become active. Any requirements to activate the capability are returned in the `requirements` arrays.
@@ -1025,6 +1037,11 @@ declare module 'stripe' {
         registration_number?: string;
 
         /**
+         * This hash is used to attest that the representative is authorized to act as the representative of their legal entity.
+         */
+        representative_declaration?: Company.RepresentativeDeclaration;
+
+        /**
          * The category identifying the legal structure of the company or legal entity. See [Business structure](https://docs.stripe.com/connect/identity-verification#business-structure) for more details. Pass an empty string to unset this value.
          */
         structure?: Stripe.Emptyable<Company.Structure>;
@@ -1106,6 +1123,23 @@ declare module 'stripe' {
           year: number;
         }
 
+        interface RepresentativeDeclaration {
+          /**
+           * The Unix timestamp marking when the representative declaration attestation was made.
+           */
+          date?: number;
+
+          /**
+           * The IP address from which the representative declaration attestation was made.
+           */
+          ip?: string;
+
+          /**
+           * The user agent of the browser from which the representative declaration attestation was made.
+           */
+          user_agent?: string;
+        }
+
         type Structure =
           | 'free_zone_establishment'
           | 'free_zone_llc'
@@ -1141,12 +1175,12 @@ declare module 'stripe' {
         namespace Verification {
           interface Document {
             /**
-             * The back of a document returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The back of a document returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             back?: string;
 
             /**
-             * The front of a document returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The front of a document returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             front?: string;
           }
@@ -1262,65 +1296,93 @@ declare module 'stripe' {
       namespace Documents {
         interface BankAccountOwnershipVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyLicense {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyMemorandumOfAssociation {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyMinisterialDecree {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyRegistrationVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyTaxIdVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface ProofOfAddress {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface ProofOfRegistration {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
+
+          /**
+           * Information regarding the person signing the document if applicable.
+           */
+          signer?: ProofOfRegistration.Signer;
+        }
+
+        namespace ProofOfRegistration {
+          interface Signer {
+            /**
+             * The token of the person signing the document, if applicable.
+             */
+            person?: string;
+          }
         }
 
         interface ProofOfUltimateBeneficialOwnership {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
+
+          /**
+           * Information regarding the person signing the document if applicable.
+           */
+          signer?: ProofOfUltimateBeneficialOwnership.Signer;
+        }
+
+        namespace ProofOfUltimateBeneficialOwnership {
+          interface Signer {
+            /**
+             * The token of the person signing the document, if applicable.
+             */
+            person?: string;
+          }
         }
       }
 
@@ -1363,7 +1425,7 @@ declare module 'stripe' {
 
       interface Groups {
         /**
-         * The group the account is in to determine their payments pricing, and null if the account is on customized pricing. [See the Platform pricing tool documentation](https://stripe.com/docs/connect/platform-pricing-tools) for details.
+         * The group the account is in to determine their payments pricing, and null if the account is on customized pricing. [See the Platform pricing tool documentation](https://docs.stripe.com/connect/platform-pricing-tools) for details.
          */
         payments_pricing?: Stripe.Emptyable<string>;
       }
@@ -1450,7 +1512,7 @@ declare module 'stripe' {
         maiden_name?: string;
 
         /**
-         * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+         * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
          */
         metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -1547,24 +1609,24 @@ declare module 'stripe' {
         namespace Verification {
           interface AdditionalDocument {
             /**
-             * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             back?: string;
 
             /**
-             * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             front?: string;
           }
 
           interface Document {
             /**
-             * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             back?: string;
 
             /**
-             * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             front?: string;
           }
@@ -1707,7 +1769,7 @@ declare module 'stripe' {
 
         interface Invoices {
           /**
-           * Whether payment methods should be saved when a payment is completed for a one-time invoices on a hosted invoice page.
+           * Whether to save the payment method after a payment is completed for a one-time invoice or a subscription invoice when the customer already has a default payment method on the hosted invoice page.
            */
           hosted_payment_method_save?: Invoices.HostedPaymentMethodSave;
         }
@@ -1865,7 +1927,7 @@ declare module 'stripe' {
 
     interface AccountUpdateParams {
       /**
-       * An [account token](https://stripe.com/docs/api#create_account_token), used to securely provide details to the account.
+       * An [account token](https://api.stripe.com#create_account_token), used to securely provide details to the account.
        */
       account_token?: string;
 
@@ -1939,7 +2001,7 @@ declare module 'stripe' {
       individual?: AccountUpdateParams.Individual;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -2318,6 +2380,11 @@ declare module 'stripe' {
         paynow_payments?: Capabilities.PaynowPayments;
 
         /**
+         * The payto_payments capability.
+         */
+        payto_payments?: Capabilities.PaytoPayments;
+
+        /**
          * The pix_payments capability.
          */
         pix_payments?: Capabilities.PixPayments;
@@ -2705,6 +2772,13 @@ declare module 'stripe' {
           requested?: boolean;
         }
 
+        interface PaytoPayments {
+          /**
+           * Passing true requests the capability for the account, if it is not already requested. A requested capability may not immediately become active. Any requirements to activate the capability are returned in the `requirements` arrays.
+           */
+          requested?: boolean;
+        }
+
         interface PixPayments {
           /**
            * Passing true requests the capability for the account, if it is not already requested. A requested capability may not immediately become active. Any requirements to activate the capability are returned in the `requirements` arrays.
@@ -2954,6 +3028,11 @@ declare module 'stripe' {
         registration_number?: string;
 
         /**
+         * This hash is used to attest that the representative is authorized to act as the representative of their legal entity.
+         */
+        representative_declaration?: Company.RepresentativeDeclaration;
+
+        /**
          * The category identifying the legal structure of the company or legal entity. See [Business structure](https://docs.stripe.com/connect/identity-verification#business-structure) for more details. Pass an empty string to unset this value.
          */
         structure?: Stripe.Emptyable<Company.Structure>;
@@ -3035,6 +3114,23 @@ declare module 'stripe' {
           year: number;
         }
 
+        interface RepresentativeDeclaration {
+          /**
+           * The Unix timestamp marking when the representative declaration attestation was made.
+           */
+          date?: number;
+
+          /**
+           * The IP address from which the representative declaration attestation was made.
+           */
+          ip?: string;
+
+          /**
+           * The user agent of the browser from which the representative declaration attestation was made.
+           */
+          user_agent?: string;
+        }
+
         type Structure =
           | 'free_zone_establishment'
           | 'free_zone_llc'
@@ -3070,12 +3166,12 @@ declare module 'stripe' {
         namespace Verification {
           interface Document {
             /**
-             * The back of a document returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The back of a document returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             back?: string;
 
             /**
-             * The front of a document returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The front of a document returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `additional_verification`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             front?: string;
           }
@@ -3132,71 +3228,99 @@ declare module 'stripe' {
       namespace Documents {
         interface BankAccountOwnershipVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyLicense {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyMemorandumOfAssociation {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyMinisterialDecree {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyRegistrationVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface CompanyTaxIdVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface ProofOfAddress {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface ProofOfRegistration {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
+
+          /**
+           * Information regarding the person signing the document if applicable.
+           */
+          signer?: ProofOfRegistration.Signer;
+        }
+
+        namespace ProofOfRegistration {
+          interface Signer {
+            /**
+             * The token of the person signing the document, if applicable.
+             */
+            person?: string;
+          }
         }
 
         interface ProofOfUltimateBeneficialOwnership {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
+
+          /**
+           * Information regarding the person signing the document if applicable.
+           */
+          signer?: ProofOfUltimateBeneficialOwnership.Signer;
+        }
+
+        namespace ProofOfUltimateBeneficialOwnership {
+          interface Signer {
+            /**
+             * The token of the person signing the document, if applicable.
+             */
+            person?: string;
+          }
         }
       }
 
       interface Groups {
         /**
-         * The group the account is in to determine their payments pricing, and null if the account is on customized pricing. [See the Platform pricing tool documentation](https://stripe.com/docs/connect/platform-pricing-tools) for details.
+         * The group the account is in to determine their payments pricing, and null if the account is on customized pricing. [See the Platform pricing tool documentation](https://docs.stripe.com/connect/platform-pricing-tools) for details.
          */
         payments_pricing?: Stripe.Emptyable<string>;
       }
@@ -3283,7 +3407,7 @@ declare module 'stripe' {
         maiden_name?: string;
 
         /**
-         * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+         * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
          */
         metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -3380,24 +3504,24 @@ declare module 'stripe' {
         namespace Verification {
           interface AdditionalDocument {
             /**
-             * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             back?: string;
 
             /**
-             * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             front?: string;
           }
 
           interface Document {
             /**
-             * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             back?: string;
 
             /**
-             * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+             * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
              */
             front?: string;
           }
@@ -3545,7 +3669,7 @@ declare module 'stripe' {
           default_account_tax_ids?: Stripe.Emptyable<Array<string>>;
 
           /**
-           * Whether payment methods should be saved when a payment is completed for a one-time invoices on a hosted invoice page.
+           * Whether to save the payment method after a payment is completed for a one-time invoice or a subscription invoice when the customer already has a default payment method on the hosted invoice page.
            */
           hosted_payment_method_save?: Invoices.HostedPaymentMethodSave;
         }
@@ -3708,7 +3832,7 @@ declare module 'stripe' {
 
     interface AccountCreateExternalAccountParams {
       /**
-       * A token, like the ones returned by [Stripe.js](https://stripe.com/docs/js) or a dictionary containing a user's external account details (with the options shown below). Please refer to full [documentation](https://stripe.com/docs/api/external_accounts) instead.
+       * A token, like the ones returned by [Stripe.js](https://docs.stripe.com/js) or a dictionary containing a user's external account details (with the options shown below). Please refer to full [documentation](https://stripe.com/docs/api/external_accounts) instead.
        */
       external_account:
         | string
@@ -3727,7 +3851,7 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.MetadataParam;
     }
@@ -3917,7 +4041,7 @@ declare module 'stripe' {
       maiden_name?: string;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -4031,21 +4155,21 @@ declare module 'stripe' {
       namespace Documents {
         interface CompanyAuthorization {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface Passport {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface Visa {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
@@ -4192,24 +4316,24 @@ declare module 'stripe' {
       namespace Verification {
         interface AdditionalDocument {
           /**
-           * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           back?: string;
 
           /**
-           * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           front?: string;
         }
 
         interface Document {
           /**
-           * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           back?: string;
 
           /**
-           * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           front?: string;
         }
@@ -4417,7 +4541,7 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -4442,7 +4566,7 @@ declare module 'stripe' {
       namespace Documents {
         interface BankAccountOwnershipVerification {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
@@ -4546,7 +4670,7 @@ declare module 'stripe' {
       maiden_name?: string;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -4660,21 +4784,21 @@ declare module 'stripe' {
       namespace Documents {
         interface CompanyAuthorization {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface Passport {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
 
         interface Visa {
           /**
-           * One or more document ids returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `account_requirement`.
+           * One or more document ids returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `account_requirement`.
            */
           files?: Array<string>;
         }
@@ -4821,24 +4945,24 @@ declare module 'stripe' {
       namespace Verification {
         interface AdditionalDocument {
           /**
-           * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           back?: string;
 
           /**
-           * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           front?: string;
         }
 
         interface Document {
           /**
-           * The back of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The back of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           back?: string;
 
           /**
-           * The front of an ID returned by a [file upload](https://stripe.com/docs/api#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
+           * The front of an ID returned by a [file upload](https://api.stripe.com#create_file) with a `purpose` value of `identity_document`. The uploaded file needs to be a color image (smaller than 8,000px by 8,000px), in JPG, PNG, or PDF format, and less than 10 MB in size.
            */
           front?: string;
         }

@@ -34,7 +34,7 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
     }
@@ -156,7 +156,11 @@ declare module 'stripe' {
         | '2025-06-30.basil'
         | '2025-07-30.basil'
         | '2025-08-27.basil'
-        | '2025-09-30.clover';
+        | '2025-09-30.clover'
+        | '2025-10-29.clover'
+        | '2025-11-17.clover'
+        | '2025-12-15.clover'
+        | '2026-01-28.clover';
 
       type EnabledEvent =
         | '*'
@@ -170,6 +174,7 @@ declare module 'stripe' {
         | 'application_fee.refund.updated'
         | 'application_fee.refunded'
         | 'balance.available'
+        | 'balance_settings.updated'
         | 'billing.alert.triggered'
         | 'billing_portal.configuration.created'
         | 'billing_portal.configuration.updated'
@@ -230,6 +235,7 @@ declare module 'stripe' {
         | 'customer_cash_balance_transaction.created'
         | 'entitlements.active_entitlement_summary.updated'
         | 'file.created'
+        | 'financial_connections.account.account_numbers_updated'
         | 'financial_connections.account.created'
         | 'financial_connections.account.deactivated'
         | 'financial_connections.account.disconnected'
@@ -237,6 +243,7 @@ declare module 'stripe' {
         | 'financial_connections.account.refreshed_balance'
         | 'financial_connections.account.refreshed_ownership'
         | 'financial_connections.account.refreshed_transactions'
+        | 'financial_connections.account.upcoming_account_number_expiry'
         | 'identity.verification_session.canceled'
         | 'identity.verification_session.created'
         | 'identity.verification_session.processing'
@@ -252,6 +259,7 @@ declare module 'stripe' {
         | 'invoice.overpaid'
         | 'invoice.paid'
         | 'invoice.payment_action_required'
+        | 'invoice.payment_attempt_required'
         | 'invoice.payment_failed'
         | 'invoice.payment_succeeded'
         | 'invoice.sent'
@@ -440,7 +448,7 @@ declare module 'stripe' {
       expand?: Array<string>;
 
       /**
-       * Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+       * Set of [key-value pairs](https://docs.stripe.com/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
        */
       metadata?: Stripe.Emptyable<Stripe.MetadataParam>;
 
@@ -463,6 +471,7 @@ declare module 'stripe' {
         | 'application_fee.refund.updated'
         | 'application_fee.refunded'
         | 'balance.available'
+        | 'balance_settings.updated'
         | 'billing.alert.triggered'
         | 'billing_portal.configuration.created'
         | 'billing_portal.configuration.updated'
@@ -523,6 +532,7 @@ declare module 'stripe' {
         | 'customer_cash_balance_transaction.created'
         | 'entitlements.active_entitlement_summary.updated'
         | 'file.created'
+        | 'financial_connections.account.account_numbers_updated'
         | 'financial_connections.account.created'
         | 'financial_connections.account.deactivated'
         | 'financial_connections.account.disconnected'
@@ -530,6 +540,7 @@ declare module 'stripe' {
         | 'financial_connections.account.refreshed_balance'
         | 'financial_connections.account.refreshed_ownership'
         | 'financial_connections.account.refreshed_transactions'
+        | 'financial_connections.account.upcoming_account_number_expiry'
         | 'identity.verification_session.canceled'
         | 'identity.verification_session.created'
         | 'identity.verification_session.processing'
@@ -545,6 +556,7 @@ declare module 'stripe' {
         | 'invoice.overpaid'
         | 'invoice.paid'
         | 'invoice.payment_action_required'
+        | 'invoice.payment_attempt_required'
         | 'invoice.payment_failed'
         | 'invoice.payment_succeeded'
         | 'invoice.sent'
